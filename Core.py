@@ -34,7 +34,7 @@ class Core:
     def run_cycles(self, num_cycles):
         for i in range(num_cycles):
             self.pipeline.run_cycle(self.pc.data, self)
-            self.pc.write(self.pc.read + 1)
+            self.pc.write(self.pc.read() + 1)
             cycles += 1
 
     def memory_array(self):

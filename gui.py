@@ -2,11 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
-def register_array():
-    return [f'Register {i}' for i in range(32)]
-
-def interpret_command(c):
-    return c
+def interpret_command(command):
+    return command
 
 class GUI:
     def __init__(self, core):
@@ -87,42 +84,33 @@ class GUI:
 
         self.update_display(self.reg_label, self.reg_field, 0, False)
 
-        # find_reg_label = tk.Label(mem_tab, text='Go to address', font=FONT)
-        # find_reg_label.place(rely=.8, relx=0, relheight=.05, relwidth=1)
-
         self.back_btn = tk.Button(self.reg_tab, text='Previous', font=self.FONT, command=lambda: self.update_display(self.reg_label, self.reg_field, -1, False))
         self.back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
-
-        # find_field = tk.Entry(mem_tab, font=FONT)
-        # find_field.place(rely=.85, relx=.345, relheight=.05, relwidth=.30)
-        # find_field.bind('<Return>', lambda event: find_in_memory_field(find_field, reg_field))
 
         self.next_btn = tk.Button(self.reg_tab, text='Next', font=self.FONT, command=lambda: self.update_display(self.reg_label, self.reg_field, 1, False))
         self.next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
 
         # DIAGNOSTIC TAB
-        # self.dia_tab = tk.Frame(self.tabs)
-        # self.dia_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
+        self.dia_tab = tk.Frame(self.tabs)
+        self.dia_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
 
-        # self.cycle_label = tk.Label(self.dia_tab, font=self.FONT)
-        # self.cycle_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
+        self.cycles_label = tk.Label(self.dia_tab, font=self.FONT)
+        self.cycles_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
 
-        # self.reg_field = scrolledtext.ScrolledText(self.reg_tab, font=self.FONT)
-        # self.reg_field.place(rely=.05, relx=0, relheight=.8, relwidth=1)
+        self.update_cycle_count(self.cycles_label)
 
-        # self.update_display(self.reg_label, self.reg_field, 0, False)
+        self.cycles_prompt_label = tk.Label(self.dia_tab, text='How many cycles to run:', font=self.FONT)
+        self.cycles_prompt_label.place(rely=.05, relx=0, relheight=.05, relwidth=1)
 
-        # self.back_btn = tk.Button(self.reg_tab, text='Previous', font=self.FONT, command=lambda: self.update_display(self.reg_label, self.reg_field, -1, False))
-        # self.back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
-
-        # self.next_btn = tk.Button(self.reg_tab, text='Next', font=self.FONT, command=lambda: self.update_display(self.reg_label, self.reg_field, 1, False))
-        # self.next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
+        self.cycles_field = tk.Entry(self.dia_tab, font=self.FONT)
+        self.cycles_field.place(rely=.1, relx=0, relwidth=1, relheight=.05)
+        self.cycles_field.bind('<Return>', lambda event: self.run_cycles(self.cycles_label, self.cycles_field))
 
         # TAB CONTROL
         self.tabs.add(self.cmd_tab, text='Command Line')
         self.tabs.add(self.mem_tab, text='Memory')
         self.tabs.add(self.reg_tab, text='Registers')
-        # self.tabs.add(self.dia_tab, text='Diagnostic')
+        self.tabs.add(self.dia_tab, text='Diagnostic')
         self.tabs.pack(expand=1, fill='both')
 
     def start(self):
@@ -149,10 +137,7 @@ class GUI:
             title = mtitles[self.mem_idx]
             val = marray[self.mem_idx]
         else:
-            # print('REGISTER')
-            # print(self.reg_idx)
             self.reg_idx = min(max(self.reg_idx+inc, 0), len(rarray)-1)
-            # print(self.reg_idx)
             title = rtitles[self.reg_idx]
             val = rarray[self.reg_idx]
 
@@ -162,7 +147,14 @@ class GUI:
         field.insert('end', val)
         field.config(state='disabled')
 
-if __name__ == '__main__':
-    main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
-    gui = GUI(main_core)
-    gui.start()
+    def update_cycle_count(self, cycles_label):
+        cycles_label['text'] = f'Cycle count: {self.core.cycles}'
+
+    def run_cycles(self, cycles_label, cycles_field):
+        self.core.run_cycles(int(cycles_field.get()))
+        self.update_cycle_count(cycles_label)
+
+# if __name__ == '__main__':
+#     main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
+#     gui = GUI(main_core)
+#     gui.start()
