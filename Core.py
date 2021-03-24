@@ -4,6 +4,10 @@ from alus.ALU import GeneralALU, FloatALU, VectorALU
 from memory.main import Memory
 from pipeline.Pipeline import Pipeline
 from gui import GUI
+import os
+import sys
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class Core:
 
@@ -41,8 +45,8 @@ class Core:
             return [f'{type} Register {i}' for i in range(len(bank.registers))]
         titles = ('PC', 'Status', 'LR', 'RET', *reg_bank_labels('General', self.GRegisters), *reg_bank_labels('Float', self.FRegisters), *reg_bank_labels('Vector', self.GRegisters))
         regs = [str(x) for x in [self.pc, self.status.bin(), self.lr, self.ret, *self.GRegisters.registers, *[f'Hex: {x.hex()}\nFloat: {x}' for x in self.FRegisters.registers], *[f'Hex: {x.hex()}\nFloats: {x}' for x in self.VRegisters.registers]]]
-        print('TITLE LENGTH', len(titles))
-        print('REGS LENGTH', len(regs))
+        # print('TITLE LENGTH', len(titles))
+        # print('REGS LENGTH', len(regs))
         return zip(titles, regs)
 
     def interpret_command(self, command):
@@ -50,5 +54,10 @@ class Core:
 
 if __name__ == '__main__':
     main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
+
+    if len(sys.argv) > 2:
+        with open(dir_path + '\\' + sys.argv[1], 'r') as f:
+            main_core.memory = jsonpickle.decode(f.read())
+
     gui = GUI(main_core)
     gui.start()
