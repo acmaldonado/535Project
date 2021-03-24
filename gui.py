@@ -24,6 +24,18 @@ def memory_array():
 def register_array():
 	return [f'Register {i}' for i in range(32)]
 
+# def update_memory_display(mem_label, mem_field, inc):
+# 	global mem_idx #ik, ik, i'll change it later
+
+# 	marray = memory_array()
+# 	mem_idx = min(max(mem_idx+inc, 0), len(marray)-1)
+
+# 	mem_label['text'] = marray[mem_idx]
+# 	mem_field.config(state='normal')
+# 	mem_field.delete('1.0', 'end')
+# 	mem_field.insert('end', marray[mem_idx])
+# 	mem_field.config(state='disabled')
+
 def find_in_memory_field(find_field, mem_field):
 	find_field.delete(0, 'end')
 
@@ -46,9 +58,6 @@ def update_display(label, field, inc, mem):
 	field.delete('1.0', 'end')
 	field.insert('end', val)
 	field.config(state='disabled')
-
-def get_cycle_count():
-	return 0
 
 root = tk.Tk()
 root.title('AMMM v1.1')
@@ -132,24 +141,10 @@ back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
 next_btn = tk.Button(reg_tab, text='Next', font=FONT, command=lambda: update_display(reg_label, reg_field, 1, False))
 next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
 
-# DIAGNOSTIC TAB
-dia_tab = tk.Frame(tabs)
-
-cycles_label = tk.Label(dia_tab, text=f'Cycles: {get_cycle_count()}', font=FONT)
-cycles_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
-
-prompt_label = tk.Label(dia_tab, text=f'How many cycles to perform:', font=FONT)
-prompt_label.place(rely=0.05, relx=0, relheight=.05, relwidth=1)
-
-cycle_field = tk.Entry(dia_tab, font=FONT)
-cycle_field.place(rely=0.1, relx=0, relheight=.05, relwidth=1)
-cycle_field.bind('<Return>', lambda event: None)
-
 # TAB CONTROL
 tabs.add(cmd_tab, text='Command Line')
 tabs.add(mem_tab, text='Memory')
 tabs.add(reg_tab, text='Registers')
-tabs.add(dia_tab, text='Diagnostic')
 tabs.pack(expand=1, fill='both')
 
 root.mainloop()
