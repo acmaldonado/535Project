@@ -15,6 +15,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 class CycleStatus(Enum):
     WAIT = -1
     DONE = 1
+    SQUASH = 2
 
 class CycleTimer():
     

@@ -49,6 +49,9 @@ class GeneralRegisterBank(RegisterBank):
         self.set_write_num(num)
         self.write(data)
 
+    def __str__(self):
+        pass
+
 
 class FloatRegisterBank(RegisterBank):
 
