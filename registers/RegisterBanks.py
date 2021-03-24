@@ -1,4 +1,4 @@
-import Registers
+from registers.Registers import GeneralRegister, FloatRegister, VectorRegister
 
 class RegisterBank:
 
@@ -22,7 +22,7 @@ class RegisterBank:
 class GeneralRegisterBank(RegisterBank):
 
     def __init__(self, size):
-        self.registers = [Registers.GeneralRegister() for i in range(size)]
+        self.registers = [GeneralRegister() for i in range(size)]
         self.size = size
         self.write_register = 0
         self.read_register = 0
@@ -53,7 +53,7 @@ class GeneralRegisterBank(RegisterBank):
 class FloatRegisterBank(RegisterBank):
 
     def __init__(self, size):
-        self.registers = [Registers.FloatRegister() for i in range(size)]
+        self.registers = [FloatRegister() for i in range(size)]
         self.size = size
         self.write_register = 0
         self.read_register = 0
@@ -84,7 +84,7 @@ class FloatRegisterBank(RegisterBank):
 class VectorRegisterBank(RegisterBank):
 
     def __init__(self, size):
-        self.registers = [Registers.VectorRegister() for i in range(size)]
+        self.registers = [VectorRegister() for i in range(size)]
         self.size = size
         self.write_register = 0
         self.read_register = 0

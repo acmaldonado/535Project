@@ -13,7 +13,7 @@ class FetchStage:
             return None
 
         curr_instruction = self.instruction
-        self.instruction = self.memory.get_instruction(pc)
+        self.instruction = self.memory.query(pc)
         if ~self.enabled:
             self.fetch_flag = False
         return curr_instruction
@@ -33,28 +33,19 @@ class DecodeStage:
     def decode_cycle(self, pc, core):
         instruction = self.fetch.fetch_cycle(pc)
         curr_decoded = self.decoded
+
         #decode here
-        execute = {}
-
-
-        memory = {}
-
-
-        writeback = {}
-
-
-        self.decoded = {'squashed': False, 'execute': execute, 'memory': memory, 'writeback': writeback}
 
         return curr_decoded
         
 
 class ExecuteStage:
 
-    def __init__(self, decode, core):
+    def __init__(self, decode):
         self.decode = decode
         self.executed = None
 
-    def execute_cycle(self, pc):
+    def execute_cycle(self, pc, core):
         curr_executed = self.executed
         self.executed = self.decode.decode_cycle(pc, core)
         #execute here
