@@ -291,10 +291,10 @@ class Execute:
             # value at register 1
             val1 = CORE.GRegisters.read(instruction['execute'].Rn)
             # If it is immediate
-            if instruction['execute'].immediate == 0:
-                val2 = instruction['execute'].operand
+            if instruction['execute']['immediate'] == 1:
+                val2 = instruction['execute']['operand']
             # If it is register direct
-            if instruction['execute'].immediate == 1:
+            if instruction['execute']['immediate'] == 0:
                 val2 = CORE.GRegisters.read(bin(instruction['execute'].operand >> 27 & 0b1111))
             else:
                 raise Exception("Wrong addressing mode")
@@ -360,3 +360,12 @@ class Write_Back:
         if instruction['writeback'].code == 'BC':
 
         return (CycleStatus.DONE, instruction)
+
+
+        '''
+        TODO:
+        * Change GeneralRegisters to CORE
+        * Change Dictionary references to []
+        * FUCKING DELETE BINS
+        * Finish
+        '''
