@@ -2,149 +2,162 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
-WIDTH, HEIGHT = 800, 700
-FONT = 'Consolas', 14
-
-mem_idx = 0
-reg_idx = 0
-
-def interpret_command(command):
-	return command
-
-def append_output(event):
-	out_field.config(state='normal')
-	out_field.insert('end', f'{interpret_command(cmd_field.get())}\n\n')
-	out_field.config(state='disabled')
-	out_field.see('end')
-	cmd_field.delete(0, 'end')
-
 def memory_array():
-	return ['Cache level 0', 'Cache level 1', 'RAM']
+    return ['Cache level 0', 'Cache level 1', 'RAM']
 
 def register_array():
-	return [f'Register {i}' for i in range(32)]
+    return [f'Register {i}' for i in range(32)]
 
-# def update_memory_display(mem_label, mem_field, inc):
-# 	global mem_idx #ik, ik, i'll change it later
+def interpret_command(c):
+    return c
 
-# 	marray = memory_array()
-# 	mem_idx = min(max(mem_idx+inc, 0), len(marray)-1)
+class GUI:
+    def __init__(self, core):
+        self.core = core
+        self.WIDTH = 800
+        self.HEIGHT = 700
+        self.FONT = 'Consolas', 14
 
-# 	mem_label['text'] = marray[mem_idx]
-# 	mem_field.config(state='normal')
-# 	mem_field.delete('1.0', 'end')
-# 	mem_field.insert('end', marray[mem_idx])
-# 	mem_field.config(state='disabled')
+        self.mem_idx = 0
+        self.reg_idx = 0
 
-def find_in_memory_field(find_field, mem_field):
-	find_field.delete(0, 'end')
+        self.root = tk.Tk()
+        self.root.title('AMMM v1.1')
+        self.root.geometry(f'{self.WIDTH}x{self.HEIGHT}')
+        # root.wm_state('zoomed')
 
-def update_display(label, field, inc, mem):
-	global mem_idx #ik, ik, i'll change it later
-	global reg_idx
+        self.tabs = ttk.Notebook(self.root, height=self.HEIGHT, width=self.WIDTH)
 
-	marray = memory_array()
-	rarray = register_array()
+        # COMMAND LINE
+        self.cmd_tab = tk.Frame(self.tabs)
+        self.cmd_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
 
-	if mem:
-		mem_idx = min(max(mem_idx+inc, 0), len(marray)-1)
-		val = marray[mem_idx]
-	else:
-		reg_idx = min(max(reg_idx+inc, 0), len(rarray)-1)
-		val = rarray[reg_idx]
+        self.cmd_label = tk.Label(self.cmd_tab, text='Enter a command:', font=self.FONT)
+        self.cmd_label.place(rely=0, relx=0, relheight=.05, relwidth=None)
 
-	label['text'] = val
-	field.config(state='normal')
-	field.delete('1.0', 'end')
-	field.insert('end', val)
-	field.config(state='disabled')
+        self.cmd_field = tk.Entry(self.cmd_tab, font=self.FONT)
+        self.cmd_field.place(rely=.05, relx=0, relwidth=1, relheight=.05)
+        self.cmd_field.bind('<Return>', self.append_output)
 
-root = tk.Tk()
-root.title('AMMM v1.1')
-root.geometry(f'{WIDTH}x{HEIGHT}')
-# root.wm_state('zoomed')
+        self.out_label = tk.Label(self.cmd_tab, text='Output:', font=self.FONT)
+        self.out_label.place(rely=.12, relx=0, relheight=.05, relwidth=None)
 
-tabs = ttk.Notebook(root, height=HEIGHT, width=WIDTH)
+        self.out_field = scrolledtext.ScrolledText(self.cmd_tab, font=self.FONT)
+        self.out_field.place(rely=.18, relx=0, relheight=.82, relwidth=1)
 
-# COMMAND LINE
-cmd_tab = tk.Frame(tabs)
-cmd_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
+        # MEMORY TAB
+        self.mem_tab = tk.Frame(self.tabs)
+        self.mem_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
 
-cmd_label = tk.Label(cmd_tab, text='Enter a command:', font=FONT)
-cmd_label.place(rely=0, relx=0, relheight=.05, relwidth=None)
+        self.mem_label = tk.Label(self.mem_tab, font=self.FONT)
+        self.mem_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
 
-cmd_field = tk.Entry(cmd_tab, font=FONT)
-cmd_field.place(rely=.05, relx=0, relwidth=1, relheight=.05)
-cmd_field.bind('<Return>', append_output)
+        self.mem_field = scrolledtext.ScrolledText(self.mem_tab, font=self.FONT)
+        self.mem_field.place(rely=.05, relx=0, relheight=.8, relwidth=1)
 
-out_label = tk.Label(cmd_tab, text='Output:', font=FONT)
-out_label.place(rely=.12, relx=0, relheight=.05, relwidth=None)
+        self.update_display(self.mem_label, self.mem_field, 0, True)
 
-out_field = scrolledtext.ScrolledText(cmd_tab, font=FONT)
-out_field.place(rely=.18, relx=0, relheight=.82, relwidth=1)
+        self.find_label = tk.Label(self.mem_tab, text='Go to address', font=self.FONT)
+        self.find_label.place(rely=.8, relx=0, relheight=.05, relwidth=1)
 
-# MEMORY TAB
-mem_tab = tk.Frame(tabs)
-mem_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
+        self.back_btn = tk.Button(self.mem_tab, text='Go up', font=self.FONT, command=lambda: self.update_display(self.mem_label, self.mem_field, -1, True))
+        self.back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
 
-mem_label = tk.Label(mem_tab, font=FONT)
-mem_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
+        self.find_field = tk.Entry(self.mem_tab, font=self.FONT)
+        self.find_field.place(rely=.85, relx=.345, relheight=.05, relwidth=.30)
+        self.find_field.bind('<Return>', lambda event: self.find_in_memory_field(self.find_field, self.mem_field))
 
-mem_field = scrolledtext.ScrolledText(mem_tab, font=FONT)
-mem_field.place(rely=.05, relx=0, relheight=.8, relwidth=1)
+        self.next_btn = tk.Button(self.mem_tab, text='Go down', font=self.FONT, command=lambda: self.update_display(self.mem_label, self.mem_field, 1, True))
+        self.next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
 
-update_display(mem_label, mem_field, 0, True)
+        self.cache_int = tk.IntVar(value=1)
+        self.cache_check = tk.Checkbutton(self.mem_tab, text='Cache', variable=self.cache_int, command=lambda: None)
+        self.cache_check.place(rely=.95, relx=0, relheight=.05, relwidth=.5)
 
-find_label = tk.Label(mem_tab, text='Go to address', font=FONT)
-find_label.place(rely=.8, relx=0, relheight=.05, relwidth=1)
+        self.pipel_int = tk.IntVar(value=1)
+        self.pipel_check = tk.Checkbutton(self.mem_tab, text='Pipeline', variable=self.pipel_int, command=lambda: None)
+        self.pipel_check.place(rely=.95, relx=.5, relheight=.05, relwidth=.5)
 
-back_btn = tk.Button(mem_tab, text='Go up', font=FONT, command=lambda: update_display(mem_label, mem_field, -1, True))
-back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
+        # REGISTERS TAB
+        self.reg_tab = tk.Frame(self.tabs)
+        self.reg_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
 
-find_field = tk.Entry(mem_tab, font=FONT)
-find_field.place(rely=.85, relx=.345, relheight=.05, relwidth=.30)
-find_field.bind('<Return>', lambda event: find_in_memory_field(find_field, mem_field))
+        self.reg_label = tk.Label(self.reg_tab, font=self.FONT)
+        self.reg_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
 
-next_btn = tk.Button(mem_tab, text='Go down', font=FONT, command=lambda: update_display(mem_label, mem_field, 1, True))
-next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
+        self.reg_field = scrolledtext.ScrolledText(self.reg_tab, font=self.FONT)
+        self.reg_field.place(rely=.05, relx=0, relheight=.8, relwidth=1)
 
-cache_int = tk.IntVar(value=1)
-cache_check = tk.Checkbutton(mem_tab, text='Cache', variable=cache_int, command=lambda: None)
-cache_check.place(rely=.95, relx=0, relheight=.05, relwidth=.5)
+        self.update_display(self.reg_label, self.reg_field, 0, False)
 
-pipel_int = tk.IntVar(value=1)
-pipel_check = tk.Checkbutton(mem_tab, text='Pipeline', variable=pipel_int, command=lambda: None)
-pipel_check.place(rely=.95, relx=.5, relheight=.05, relwidth=.5)
+        # find_reg_label = tk.Label(mem_tab, text='Go to address', font=FONT)
+        # find_reg_label.place(rely=.8, relx=0, relheight=.05, relwidth=1)
 
-# REGISTERS TAB
-reg_tab = tk.Frame(tabs)
-reg_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
+        self.back_btn = tk.Button(self.reg_tab, text='Previous', font=self.FONT, command=lambda: self.update_display(self.reg_label, self.reg_field, -1, False))
+        self.back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
 
-reg_label = tk.Label(reg_tab, font=FONT)
-reg_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
+        # find_field = tk.Entry(mem_tab, font=FONT)
+        # find_field.place(rely=.85, relx=.345, relheight=.05, relwidth=.30)
+        # find_field.bind('<Return>', lambda event: find_in_memory_field(find_field, reg_field))
 
-reg_field = scrolledtext.ScrolledText(reg_tab, font=FONT)
-reg_field.place(rely=.05, relx=0, relheight=.8, relwidth=1)
+        self.next_btn = tk.Button(self.reg_tab, text='Next', font=self.FONT, command=lambda: self.update_display(self.reg_label, self.reg_field, 1, False))
+        self.next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
 
-update_display(reg_label, reg_field, 0, False)
+        # DIAGNOSTIC TAB
+        # self.dia_tab = tk.Frame(self.tabs)
+        # self.dia_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
 
-# find_reg_label = tk.Label(mem_tab, text='Go to address', font=FONT)
-# find_reg_label.place(rely=.8, relx=0, relheight=.05, relwidth=1)
+        # self.cycle_label = tk.Label(self.dia_tab, font=self.FONT)
+        # self.cycle_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
 
-back_btn = tk.Button(reg_tab, text='Previous', font=FONT, command=lambda: update_display(reg_label, reg_field, -1, False))
-back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
+        # self.reg_field = scrolledtext.ScrolledText(self.reg_tab, font=self.FONT)
+        # self.reg_field.place(rely=.05, relx=0, relheight=.8, relwidth=1)
 
-# find_field = tk.Entry(mem_tab, font=FONT)
-# find_field.place(rely=.85, relx=.345, relheight=.05, relwidth=.30)
-# find_field.bind('<Return>', lambda event: find_in_memory_field(find_field, reg_field))
+        # self.update_display(self.reg_label, self.reg_field, 0, False)
 
-next_btn = tk.Button(reg_tab, text='Next', font=FONT, command=lambda: update_display(reg_label, reg_field, 1, False))
-next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
+        # self.back_btn = tk.Button(self.reg_tab, text='Previous', font=self.FONT, command=lambda: self.update_display(self.reg_label, self.reg_field, -1, False))
+        # self.back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
 
-# TAB CONTROL
-tabs.add(cmd_tab, text='Command Line')
-tabs.add(mem_tab, text='Memory')
-tabs.add(reg_tab, text='Registers')
-tabs.pack(expand=1, fill='both')
+        # self.next_btn = tk.Button(self.reg_tab, text='Next', font=self.FONT, command=lambda: self.update_display(self.reg_label, self.reg_field, 1, False))
+        # self.next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
 
-root.mainloop()
+        # TAB CONTROL
+        self.tabs.add(self.cmd_tab, text='Command Line')
+        self.tabs.add(self.mem_tab, text='Memory')
+        self.tabs.add(self.reg_tab, text='Registers')
+        # self.tabs.add(self.dia_tab, text='Diagnostic')
+        self.tabs.pack(expand=1, fill='both')
+
+    def start(self):
+        self.root.mainloop()
+
+    def append_output(self, event):
+        self.out_field.config(state='normal')
+        self.out_field.insert('end', f'{interpret_command(self.cmd_field.get())}\n\n')
+        self.out_field.config(state='disabled')
+        self.out_field.see('end')
+        self.cmd_field.delete(0, 'end')
+
+    def find_in_memory_field(self, find_field, mem_field):
+        self.find_field.delete(0, 'end')
+
+    def update_display(self, label, field, inc, mem):
+        marray = memory_array()
+        rarray = register_array()
+
+        if mem:
+            self.mem_idx = min(max(self.mem_idx+inc, 0), len(marray)-1)
+            val = marray[self.mem_idx]
+        else:
+            self.reg_idx = min(max(self.reg_idx+inc, 0), len(rarray)-1)
+            val = rarray[self.reg_idx]
+
+        label['text'] = val
+        field.config(state='normal')
+        field.delete('1.0', 'end')
+        field.insert('end', val)
+        field.config(state='disabled')
+
+if __name__ == '__main__':
+    gui = GUI(1)
+    gui.start()

@@ -8,6 +8,8 @@ FONT = 'Consolas', 14
 mem_idx = 0
 reg_idx = 0
 
+main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
+
 def interpret_command(command):
 	return command
 

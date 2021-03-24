@@ -31,6 +31,14 @@ class Core:
             self.pc.write(self.pc.read + 1)
             cycles += 1
 
+    def memory_array():
+        return ['Cache level 0', 'Cache level 1', 'RAM']
+
+    def register_array():
+        return [f'Register {i}' for i in range(32)]
+
+    def interpret_command(self, command):
+        return command
 
 if __name__ == '__main__':
-    mainCore = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
+    main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
