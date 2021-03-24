@@ -132,7 +132,7 @@ class CacheBlock():
 
 class RAMBlock():
     def __init__(self, address_size):
-        self.memory_array = [CacheLine() for i in range(2**(address_size-2))]
+        self.memory_array = [CacheLine() for i in range(2**(address_size-OFFSET_SIZE))]
         self.address_size = address_size
         self.timer = CycleTimer(3)
 
