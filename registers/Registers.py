@@ -30,6 +30,19 @@ class GeneralRegister(Register):
     def read(self) -> int:
         return self.data
 
+    def bin(self) -> str:
+        return f'{self.data:#034b}'[2:]
+
+    def hex(self) -> str:
+        return f'{self.data:#010x}'
+
+    def __str__(self):
+        return self.hex()
+
+    def __repr__(self):
+        return str(self)
+
+
 class FloatRegister(Register):
 
     def __init__(self):
@@ -41,6 +54,16 @@ class FloatRegister(Register):
     
     def read(self) -> int:
         return self.data
+
+    def hex(self) -> str:
+        return hex(struct.unpack('<I', struct.pack('<f', self.data))[0])
+
+    def __str__(self):
+        return str(self.data)
+
+    def __repr__(self):
+        return str(self)
+
 
 class VectorRegister(Register):
     def __init__(self):
@@ -56,3 +79,12 @@ class VectorRegister(Register):
         for i in range(len(self.data)):
             vals.append(self.data[i].read())
         return vals
+
+    def hex(self) -> str:
+        return ' '.join(x.hex() for x in self.data)
+
+    def __str__(self):
+        return str(' '.join(str(x) for x in self.data))
+
+    def __repr__(self):
+        return str(self)

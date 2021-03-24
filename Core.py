@@ -33,11 +33,17 @@ class Core:
             self.pc.write(self.pc.read + 1)
             cycles += 1
 
-    def memory_array():
-        return ['Cache level 0', 'Cache level 1', 'RAM']
+    def memory_array(self):
+        return [*enumerate([str(x) for x in self.memory.caches]), ('RAM', str(self.memory.main_memory))]
 
-    def register_array():
-        return [f'Register {i}' for i in range(32)]
+    def register_array(self):
+        def reg_bank_labels(type, bank):
+            return [f'{type} Register {i}' for i in range(len(bank.registers))]
+        titles = ('PC', 'Status', 'LR', 'RET', *reg_bank_labels('General', self.GRegisters), *reg_bank_labels('Float', self.FRegisters), *reg_bank_labels('Vector', self.GRegisters))
+        regs = [str(x) for x in [self.pc, self.status.bin(), self.lr, self.ret, *self.GRegisters.registers, *[f'Hex: {x.hex()}\nFloat: {x}' for x in self.FRegisters.registers], *[f'Hex: {x.hex()}\nFloats: {x}' for x in self.VRegisters.registers]]]
+        print('TITLE LENGTH', len(titles))
+        print('REGS LENGTH', len(regs))
+        return zip(titles, regs)
 
     def interpret_command(self, command):
         return command

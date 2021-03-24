@@ -49,6 +49,12 @@ class GeneralRegisterBank(RegisterBank):
         self.set_write_num(num)
         self.write(data)
 
+    def __str__(self):
+        return ' '.join(str(x) for x in self.registers)
+
+    def __repr__(self):
+        return str(self)
+
 
 class FloatRegisterBank(RegisterBank):
 
@@ -80,6 +86,12 @@ class FloatRegisterBank(RegisterBank):
         self.set_write_num(num)
         self.write(data)
 
+    def __str__(self):
+        return ' '.join(str(x) for x in self.registers)
+
+    def __repr__(self):
+        return str(self)
+
 
 class VectorRegisterBank(RegisterBank):
 
@@ -110,3 +122,9 @@ class VectorRegisterBank(RegisterBank):
     def set_and_write(self, num: int, data: int) -> None:
         self.set_write_num(num)
         self.write(data)
+
+    def __str__(self):
+        return ' '.join(f'{i}:\t{x}' for i, x in enumerate(self.registers))
+
+    def __repr__(self):
+        return str(self)

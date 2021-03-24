@@ -2,9 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
-def memory_array():
-    return ['Cache level 0', 'Cache level 1', 'RAM']
-
 def register_array():
     return [f'Register {i}' for i in range(32)]
 
@@ -58,17 +55,17 @@ class GUI:
         self.update_display(self.mem_label, self.mem_field, 0, True)
 
         self.find_label = tk.Label(self.mem_tab, text='Go to address', font=self.FONT)
-        self.find_label.place(rely=.8, relx=0, relheight=.05, relwidth=1)
+        self.find_label.place(rely=.85, relx=0, relheight=.05, relwidth=1)
 
         self.back_btn = tk.Button(self.mem_tab, text='Go up', font=self.FONT, command=lambda: self.update_display(self.mem_label, self.mem_field, -1, True))
-        self.back_btn.place(rely=.85, relx=0, relheight=.05, relwidth=.33)
+        self.back_btn.place(rely=.90, relx=0, relheight=.05, relwidth=.33)
 
         self.find_field = tk.Entry(self.mem_tab, font=self.FONT)
-        self.find_field.place(rely=.85, relx=.345, relheight=.05, relwidth=.30)
+        self.find_field.place(rely=.90, relx=.345, relheight=.05, relwidth=.30)
         self.find_field.bind('<Return>', lambda event: self.find_in_memory_field(self.find_field, self.mem_field))
 
         self.next_btn = tk.Button(self.mem_tab, text='Go down', font=self.FONT, command=lambda: self.update_display(self.mem_label, self.mem_field, 1, True))
-        self.next_btn.place(rely=.85, relx=.66, relheight=.05, relwidth=.33)
+        self.next_btn.place(rely=.90, relx=.66, relheight=.05, relwidth=.33)
 
         self.cache_int = tk.IntVar(value=1)
         self.cache_check = tk.Checkbutton(self.mem_tab, text='Cache', variable=self.cache_int, command=lambda: None)
@@ -139,25 +136,33 @@ class GUI:
         self.cmd_field.delete(0, 'end')
 
     def find_in_memory_field(self, find_field, mem_field):
-        self.find_field.delete(0, 'end')
+        query = find_field.get()
+        mem_field.see(str(float(int(query, 16 if 'x' in query else 10))))
+        find_field.delete(0, 'end')
 
     def update_display(self, label, field, inc, mem):
-        marray = memory_array()
-        rarray = register_array()
+        mtitles, marray = zip(*self.core.memory_array())
+        rtitles, rarray = zip(*self.core.register_array())
 
         if mem:
             self.mem_idx = min(max(self.mem_idx+inc, 0), len(marray)-1)
+            title = mtitles[self.mem_idx]
             val = marray[self.mem_idx]
         else:
+            # print('REGISTER')
+            # print(self.reg_idx)
             self.reg_idx = min(max(self.reg_idx+inc, 0), len(rarray)-1)
+            # print(self.reg_idx)
+            title = rtitles[self.reg_idx]
             val = rarray[self.reg_idx]
 
-        label['text'] = val
+        label['text'] = title
         field.config(state='normal')
         field.delete('1.0', 'end')
         field.insert('end', val)
         field.config(state='disabled')
 
 if __name__ == '__main__':
-    gui = GUI(1)
+    main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
+    gui = GUI(main_core)
     gui.start()
