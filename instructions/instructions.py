@@ -36,12 +36,12 @@ class DecodeClass:
             'result': None
         }
 
-        type_code = bin(instr & 0b111)
+        type_code = instr & 0b111
         
         # Data type_code
         if type_code == 0b000:
 
-            opcode = bin(instr >> 4 & 0b1111)
+            opcode = instr >> 4 & 0b1111
 
             # MOV
             if opcode == 0b0000:
@@ -49,18 +49,18 @@ class DecodeClass:
                 instruction['memory'] = {}
                 instruction['writeback'] = {
                     'code': 'MOV',
-                    'Rd': bin(instr >> 9 & 0b1111),
+                    'Rd': instr >> 9 & 0b1111,
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'operand': bin(instr >> 14 & 0b111111111111111111),
+                    'operand': instr >> 14 & 0b111111111111111111,
                     'timer': CycleTimer(1)
                 }
                 '''
                 code = 'MOV'
-                Rd = bin(instr >> 9 & 0b1111)
+                Rd = instr >> 9 & 0b1111
                 immediate = instr >> 3 & 1
                 set_status = instr >> 8 & 1
-                operand = bin(instr >> 14 & 0b111111111111111111)
+                operand = instr >> 14 & 0b111111111111111111
                 '''
 
             # CMP
@@ -69,21 +69,21 @@ class DecodeClass:
                     'code': 'CMP',
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'operand': bin(instr >> 13 & 0b1111111111111111111),
+                    'operand': instr >> 13 & 0b1111111111111111111,
                     'timer': CycleTimer(1)
                 }
                 instruction['memory'] = {
                     'code': 'CMP',
-                    'Rn': bin(instr >> 9 & 0b1111),
+                    'Rn': instr >> 9 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 instruction['writeback'] = {}
                 '''
                 code = 'CMP'
-                Rn = bin(instr >> 9 & 0b1111)
+                Rn = instr >> 9 & 0b1111
                 immediate = instr >> 3 & 1
                 set_status = instr >> 8 & 1
-                operand = bin(instr >> 13 & 0b1111111111111111111)
+                operand = instr >> 13 & 0b1111111111111111111
                 '''
 
             # SHT
@@ -92,29 +92,29 @@ class DecodeClass:
                     'code': 'SHT',
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'Rd': bin(instr >> 13 & 0b1111),
-                    'operand': bin(instr >> 18 & 0b11111111111111),
+                    'Rd': instr >> 13 & 0b1111,
+                    'operand': instr >> 18 & 0b11111111111111,
                     'timer': CycleTimer(1)
                 }
                 instruction['memory'] = {
                     'code': 'SHT',
-                    'Rn': bin(instr >> 9 & 0b1111),
+                    'Rn': instr >> 9 & 0b1111,
                     'addressing': instr >> 17 & 1,
                     'timer': CycleTimer(1)
                 }
                 instruction['writeback'] = {
                     'code': 'SHT',
-                    'Rn': bin(instr >> 9 & 0b1111),
+                    'Rn': instr >> 9 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 '''
                 code = 'SHT'
-                Rn = bin(instr >> 9 & 0b1111)
-                Rd = bin(instr >> 13 & 0b1111)
+                Rn = instr >> 9 & 0b1111
+                Rd = instr >> 13 & 0b1111
                 immediate = instr >> 3 & 1
                 set_status = instr >> 8 & 1
                 addressing = instr >> 17 & 1
-                operand = bin(instr >> 18 & 0b11111111111111)
+                operand = instr >> 18 & 0b11111111111111
                 '''
             
             # LGC
@@ -123,29 +123,29 @@ class DecodeClass:
                     'code': 'LGC',
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'Rd': bin(instr >> 13 & 0b1111),
-                    'shift': bin(instr >> 17 & 0b11),
-                    'operand': bin(instr >> 19 & 0b1111111111111),
+                    'Rd': instr >> 13 & 0b1111,
+                    'shift': instr >> 17 & 0b11,
+                    'operand': instr >> 19 & 0b1111111111111,
                     'timer': CycleTimer(1)
                 }
                 instruction['memory'] = {
                     'code': 'LGC',
-                    'Rn': bin(instr >> 9 & 0b1111),
+                    'Rn': instr >> 9 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 instruction['writeback'] = {
                     'code': 'LGC',
-                    'Rn': bin(instr >> 9 & 0b1111),
+                    'Rn': instr >> 9 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 '''
                 code = 'LGC'
-                Rn = bin(instr >> 9 & 0b1111)
-                Rd = bin(instr >> 13 & 0b1111)
+                Rn = instr >> 9 & 0b1111
+                Rd = instr >> 13 & 0b1111
                 immediate = instr >> 3 & 1
                 set_status = instr >> 8 & 1
-                shift = bin(instr >> 17 & 0b11)
-                operand = bin(instr >> 19 & 0b1111111111111)
+                shift = instr >> 17 & 0b11
+                operand = instr >> 19 & 0b1111111111111
                 '''
             
             # Any other opcode format 
@@ -156,27 +156,27 @@ class DecodeClass:
                     'code': 'ADD',
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'Rd': bin(instr >> 13 & 0b1111),
-                    'operand': bin(instr >> 17 & 0b111111111111111),
+                    'Rd': instr >> 13 & 0b1111,
+                    'operand': instr >> 17 & 0b111111111111111,
                     'timer': CycleTimer(1)
                     }
                     instruction['memory'] = {
                         'code': 'ADD',
-                        'Rn': bin(instr >> 9 & 0b1111),
+                        'Rn': instr >> 9 & 0b1111,
                         'timer': CycleTimer(1)
                     }
                     instruction['writeback'] = {
                         'code': 'ADD',
-                        'Rn': bin(instr >> 9 & 0b1111),
+                        'Rn': instr >> 9 & 0b1111,
                         'timer': CycleTimer(1)
                     }
                     '''
                     code = 'ADD'
-                    Rn = bin(instr >> 9 & 0b1111)
-                    Rd = bin(instr >> 13 & 0b1111)
+                    Rn = instr >> 9 & 0b1111
+                    Rd = instr >> 13 & 0b1111
                     immediate = instr >> 3 & 1
                     set_status = instr >> 8 & 1
-                    operand = bin(instr >> 17 & 0b111111111111111)
+                    operand = instr >> 17 & 0b111111111111111
                     '''
                 # Missing opcodes
 
@@ -191,22 +191,22 @@ class DecodeClass:
         # Load/Store type_code
         if type_code == 0b011:
             
-            opcode = bin(instr >> 4 & 0b1111)
+            opcode = instr >> 4 & 0b1111
 
             # LDR
             if opcode == 0b000:
                 instruction['execute'] = {}
                 instruction['memory'] = {
                     'code': 'LDR',
-                    'Rd': bin(instr >> 7 & 0b1111),
+                    'Rd': instr >> 7 & 0b1111,
                     'immediate': instr >> 3 & 1,
-                    'operand': bin(instr >> 11 & 0b1111111111111111),
-                    'offset': bin(instr >> 27 & 0b11111),
+                    'operand': instr >> 11 & 0b1111111111111111,
+                    'offset': instr >> 27 & 0b11111,
                     'timer': CycleTimer(1)
                 }
                 instruction['writeback'] = {
                     'code': 'LDR',
-                    'Rd': bin(instr >> 7 & 0b1111),
+                    'Rd': instr >> 7 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 '''
@@ -310,7 +310,7 @@ class Execute:
                 val2 = instruction['execute'].operand
             # If it is register direct
             if instruction['execute'].immediate == 1:
-                val2 = GeneralRegisterBank.read(bin(instruction['execute'].operand >> 27 & 0b1111))
+                val2 = CORE.GRegisters.read(bin(instruction['execute'].operand >> 27 & 0b1111))
             else:
                 raise Exception("Wrong addressing mode")
 
@@ -347,11 +347,11 @@ class Write_Back:
 
         # ADD
         if instruction['writeback'].code == 'ADD':
-            GeneralRegisterBank.set_and_write(instruction['writeback'].Rd, instruction['result'])
+            CORE.GRegisters.set_and_write(instruction['writeback'].Rd, instruction['result'])
 
         # LDR
         if instruction['writeback'].code == 'LDR':
-            GeneralRegisterBank.set_and_write(instruction['writeback'].Rd, instruction['result'])
+            CORE.GRegisters.set_and_write(instruction['writeback'].Rd, instruction['result'])
 
         # STR
         if instruction['writeback'].code == 'STR':
