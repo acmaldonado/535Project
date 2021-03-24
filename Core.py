@@ -1,4 +1,4 @@
-from registers import RegisterBanks
+from registers import RegisterBanks, Registers
 from alus import ALU
 from memory import main
 from pipeline import Pipeline
@@ -10,11 +10,27 @@ class Core:
         self.FALU = ALU.FloatALU()
         self.VALU = ALU.VectorALU()
 
+        self.pc = Registers.GeneralRegister()
+        self.status = Registers.GeneralRegister()
+        self.lr = Registers.GeneralRegister()
+        self.ret = Registers.GeneralRegister()
+
         self.GRegisters = RegisterBanks.GeneralRegisterBank(sizeg)
         self.FRegisters = RegisterBanks.FloatRegisterBank(sizef)
         self.VRegisters = RegisterBanks.VectorRegisterBank(sizev)
 
-        self.Memory = main.Memory(memsize, caches)
+        self.memory = main.Memory(memsize, caches)
 
-        self.Pipeline = Pipeline.Pipeline(self.Memory)
+        self.pipeline = Pipeline.Pipeline(self.memory)
 
+        self.cycles = 0
+
+    def run_cycles(self, num_cycles):
+        for i in range(num_cycles):
+            self.pipeline.run_cycle(self.pc.data, self)
+            self.pc.write(self.pc.read + 1)
+            cycles += 1
+
+
+if __name__ == '__main__':
+    mainCore = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
