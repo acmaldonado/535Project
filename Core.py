@@ -1,27 +1,29 @@
-from registers import RegisterBanks, Registers
-from alus import ALU
-from memory import main
-from pipeline import Pipeline
+from registers.RegisterBanks import GeneralRegisterBank, FloatRegisterBank, VectorRegisterBank
+from registers.Registers import GeneralRegister
+from alus.ALU import GeneralALU, FloatALU, VectorALU
+from memory.main import Memory
+from pipeline.Pipeline import Pipeline
+from gui import GUI
 
 class Core:
 
     def __init__(self, sizeg, sizef, sizev, memsize, caches):
-        self.GALU = ALU.GeneralALU()
-        self.FALU = ALU.FloatALU()
-        self.VALU = ALU.VectorALU()
+        self.GALU = GeneralALU()
+        self.FALU = FloatALU()
+        self.VALU = VectorALU()
 
-        self.pc = Registers.GeneralRegister()
-        self.status = Registers.GeneralRegister()
-        self.lr = Registers.GeneralRegister()
-        self.ret = Registers.GeneralRegister()
+        self.pc = GeneralRegister()
+        self.status = GeneralRegister()
+        self.lr = GeneralRegister()
+        self.ret = GeneralRegister()
 
-        self.GRegisters = RegisterBanks.GeneralRegisterBank(sizeg)
-        self.FRegisters = RegisterBanks.FloatRegisterBank(sizef)
-        self.VRegisters = RegisterBanks.VectorRegisterBank(sizev)
+        self.GRegisters = GeneralRegisterBank(sizeg)
+        self.FRegisters = FloatRegisterBank(sizef)
+        self.VRegisters = VectorRegisterBank(sizev)
 
-        self.memory = main.Memory(memsize, caches)
+        self.memory = Memory(memsize, caches)
 
-        self.pipeline = Pipeline.Pipeline(self.memory)
+        self.pipeline = Pipeline(self.memory)
 
         self.cycles = 0
 
@@ -42,3 +44,5 @@ class Core:
 
 if __name__ == '__main__':
     main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
+    gui = GUI(main_core)
+    gui.start()
