@@ -10,8 +10,9 @@ class FetchStage:
         self.fetch_flag = True
         self.ended = False
     
-    def fetch_cycle(self, status, pc):
-        if ~self.enabled and ~self.fetch_flag:
+
+    def fetch_cycle(self, pc):
+        if not self.enabled and not self.fetch_flag:
             return None
 
         if self.ended:
@@ -34,12 +35,12 @@ class FetchStage:
             self.ended = True
             return None
 
-        if ~self.enabled:
+        if not self.enabled:
             self.fetch_flag = False
         return CycleStatus.WAIT, curr_instruction
 
     def toggle_enabled(self):
-        self.enabled = ~self.enabled
+        self.enabled = not self.enabled
 
     def raise_fetch_flag(self):
         self.fetch_flag = True
@@ -145,14 +146,14 @@ class WritebackStage:
         if self.written is not None and self.written[0] == CycleStatus.WAIT:
             self.memory.memory_cycle(CycleStatus.WAIT, pc, core, pipe)
         else:
-            if ~self.enabled:
+            if not self.enabled:
                 self.fetch.raise_fetch_flag()
             written_to_return = self.written
             self.written = self.memory.memory_cycle(CycleStatus.DONE, pc, core, pipe)
             return written_to_return
 
     def toggle_enabled(self):
-        self.enabled = ~self.enabled
+        self.enabled = not self.enabled
 
 class Pipeline:
 

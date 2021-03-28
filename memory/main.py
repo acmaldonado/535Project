@@ -1,5 +1,5 @@
 from enum import Enum
-from math import log2, ceil
+from math import log2, ceil, log
 import jsonpickle
 import json
 import os
@@ -56,10 +56,10 @@ class CacheLine():
             self.data = [0] * LINE_SIZE
 
         def __str__(self):
-            return f'valid:{self.valid}, tag:{self.tag}, data:{self.data}'
+            return f'tag={self.tag}:\t{" ".join("{0:#010x}".format(x) for x in self.data)}, valid={1 if self.valid else 0}'
 
         def __repr__(self):
-            return f'valid:{self.valid}, tag:{self.tag}, data:{self.data}'
+            return str(self)
 
 class CacheBlock():
 
@@ -125,7 +125,7 @@ class CacheBlock():
             return CycleStatus.WAIT, None
 
     def __str__(self):
-        return str('\n'.join([ (str(i) + ': ' + str(self.memory_array[i])) for i in range(len(self.memory_array)) ]))
+        return '\n'.join(f'address: {i:#0{ceil(self.index_bit_count/4)+2}x}, {str(x)}' for i, x in enumerate(self.memory_array))
 
     def __repr__(self):
         return str(self)
@@ -133,7 +133,7 @@ class CacheBlock():
 
 class RAMBlock():
     def __init__(self, address_size):
-        self.memory_array = [CacheLine() for i in range(2**(address_size-2))]
+        self.memory_array = [CacheLine() for i in range(2**(address_size-OFFSET_SIZE))]
         self.address_size = address_size
         self.timer = CycleTimer(3)
 
@@ -159,10 +159,10 @@ class RAMBlock():
             return CycleStatus.WAIT
 
     def __str__(self):
-        return str(self.memory_array)
-    
+        return '\n'.join(f'address: {i:#0{ceil(self.address_size/4)+2}x}, {str(x)}' for i, x in enumerate(self.memory_array))
+
     def __repr__(self):
-        return str(self.memory_array)
+        return str(self)
 
 
 class Memory():
