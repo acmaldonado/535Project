@@ -1,10 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
-
-def interpret_command(command):
-    return command
-
 class GUI:
     def __init__(self, core):
         self.core = core
@@ -118,7 +114,7 @@ class GUI:
 
     def append_output(self, event):
         self.out_field.config(state='normal')
-        self.out_field.insert('end', f'{interpret_command(self.cmd_field.get())}\n\n')
+        self.out_field.insert('end', f'{self.core.interpret_command(self.cmd_field.get())}\n')
         self.out_field.config(state='disabled')
         self.out_field.see('end')
         self.cmd_field.delete(0, 'end')

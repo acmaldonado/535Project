@@ -243,9 +243,8 @@ def main():
 
         if cmd == 'load_memory_from_json':
             print(f'Loading memory snapshot from json at {inp[1]} ...')
-            '''with open(dir_path + '\\' + inp[1], 'r') as f:
-                memory_system = jsonpickle.decode(f.read())'''
-            memory_system = load_memory_from_json(inp[1])
+            with open(dir_path + '\\' + inp[1], 'r') as f:
+                memory_system = jsonpickle.decode(f.read())
             print('Done!')
             
         if cmd == 'dump_memory_to_json':

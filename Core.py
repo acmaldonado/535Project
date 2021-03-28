@@ -52,7 +52,102 @@ class Core:
         return zip(titles, regs)
 
     def interpret_command(self, command):
-        return command
+        inp = command.lower().split(' ')
+
+        cmd = inp[0]
+        adr_size = None
+        adr = None
+
+        return_string =  ""
+
+        if len(inp) == 2:
+            if cmd == 'create_empty_memory':
+                adr_size = int(inp[1])
+            elif cmd in ['read', 'write']:
+                adr = int(inp[1])
+
+        if cmd == 'create_empty_memory':
+            return_string +=  f'Creating empty memory with {inp[1]} bit address space ...\n'
+            self.memory = Memory(int(inp[1]), json.loads(inp[2]))
+            return_string +=  'Done!\n'
+
+        if cmd == 'load_memory_from_json':
+            return_string +=  f'Loading memory snapshot from json at {inp[1]} ...\n'
+            with open(dir_path + '\\' + inp[1], 'r') as f:
+                self.memory = jsonpickle.decode(f.read())
+            return_string +=  'Done!\n'
+            
+        if cmd == 'dump_memory_to_json':
+            return_string +=  f'Dumping memory snapshot to json at {inp[1]} ...\n'
+            with open(dir_path + '\\' + inp[1], 'w') as f:
+                f.write(jsonpickle.encode(self.memory))
+            return_string +=  'Done!\n'
+
+        if cmd == 'write':
+            if not self.memory:
+                return_string +=  'No memory system loaded\n'
+                return return_string
+            return_string +=  f'Writing {inp[2]} to memory at location {inp[1]} ...\n'
+            result = None
+            count = -1
+            while result != CycleStatus.DONE:
+                result = self.memory.store(int(inp[1]), int(inp[2]))
+                # return_string +=  f'Waited cycle, result is {result}'
+                count += 1
+            return_string +=  f'Done! Waited {count} cycle{"s" if count != 1 else ""}!\n'
+            
+        if cmd == 'read':
+            if not self.memory:
+                return_string +=  'No memory system loaded\n'
+                return return_string
+            result = None, None
+            count = -1
+            while result[0] != CycleStatus.DONE:
+                result = self.memory.query(int(inp[1]))
+                #return_string +=  f'Waited cycle, result is {result}\n'
+                count +=1   
+            return_string +=  f'The value at {int(inp[1])} was read to be {result[1]}! Waited {count} cycles!\n'
+
+        if cmd == 'view':
+            if not self.memory:
+                return_string +=  'No memory system loaded\n'
+                return return_string
+
+            if len(inp) < 2:
+                # View entire memory system
+                return_string +=  "Viewing entire memory\n"
+                return_string +=  str(self.memory)
+                
+            else:
+                level = int(inp[1])
+
+                if len(inp) < 3:
+                    # If the level of cache you're checking is the RAM (last cache line)
+                    if level < 0: 
+                        return_string +=  'Viewing RAM\n'
+                        # curr_level = self.memory.caches[len(self.memory.caches) - 1]
+                        # return_string +=  str(curr_level)
+                        return_string +=  str(self.memory.main_memory.memory_array) + '\n'
+                    # Else just print the entire line for that cache
+                    else:
+                        return_string +=  f'Viewing all lines for Level of Cache {inp[1]}:\n'
+                        curr_level = self.memory.caches[level]
+                        return_string +=  str(curr_level) + '\n'
+                else: 
+                    line_idx = int(inp[2])
+                        # If the level of cache you're checking is the RAM (last cache line)
+                    if level < 0: 
+                        return_string +=  f'Viewing RAM at line {inp[2]}:\n'
+                        return_string +=  str(self.memory.main_memory.memory_array[line_idx]) + '\n'
+                    else:
+                        return_string +=  f'Viewing Level of Cache {inp[1]} at line {inp[2]}:\n'
+                        curr_level = self.memory.caches[level]
+                        return_string +=  str(curr_level.memory_array[line_idx]) + '\n'
+
+        if cmd == 'quit':
+            exit(0)
+        
+        return return_string
 
 if __name__ == '__main__':
     main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})

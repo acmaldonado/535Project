@@ -13,7 +13,7 @@ class FetchStage:
             return None
 
         curr_instruction = self.instruction
-        self.instruction = self.memory.query(pc)
+        self.instruction = self.memory.query(pc.read())
         if not self.enabled:
             self.fetch_flag = False
         return curr_instruction
