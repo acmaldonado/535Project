@@ -55,7 +55,7 @@ class CacheLine():
             self.data = [0] * LINE_SIZE
 
         def __str__(self):
-            return f'tag={self.tag}:\t{" ".join("{0:#010x}".format(0) for x in self.data)}, valid={1 if self.valid else 0}'
+            return f'tag={self.tag}:\t{" ".join("{0:#010x}".format(x) for x in self.data)}, valid={1 if self.valid else 0}'
 
         def __repr__(self):
             return str(self)
@@ -243,8 +243,9 @@ def main():
 
         if cmd == 'load_memory_from_json':
             print(f'Loading memory snapshot from json at {inp[1]} ...')
-            with open(dir_path + '\\' + inp[1], 'r') as f:
-                memory_system = jsonpickle.decode(f.read())
+            '''with open(dir_path + '\\' + inp[1], 'r') as f:
+                memory_system = jsonpickle.decode(f.read())'''
+            memory_system = load_memory_from_json(inp[1])
             print('Done!')
             
         if cmd == 'dump_memory_to_json':

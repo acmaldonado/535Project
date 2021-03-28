@@ -1,9 +1,11 @@
 from registers.RegisterBanks import GeneralRegisterBank, FloatRegisterBank, VectorRegisterBank
 from registers.Registers import GeneralRegister
 from alus.ALU import GeneralALU, FloatALU, VectorALU
-from memory.main import Memory
+from memory.main import *
 from pipeline.Pipeline import Pipeline
 from gui import GUI
+import jsonpickle
+import json
 import os
 import sys
 
@@ -33,9 +35,9 @@ class Core:
 
     def run_cycles(self, num_cycles):
         for i in range(num_cycles):
-            self.pipeline.run_cycle(self.pc.data, self)
+            self.pipeline.run_cycle(self.pc, self)
             self.pc.write(self.pc.read() + 1)
-            cycles += 1
+            self.cycles += 1
 
     def memory_array(self):
         return [*enumerate([str(x) for x in self.memory.caches]), ('RAM', str(self.memory.main_memory))]
@@ -55,7 +57,7 @@ class Core:
 if __name__ == '__main__':
     main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
 
-    if len(sys.argv) > 2:
+    if len(sys.argv) >= 2:
         with open(dir_path + '\\' + sys.argv[1], 'r') as f:
             main_core.memory = jsonpickle.decode(f.read())
 
