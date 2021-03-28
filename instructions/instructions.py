@@ -211,10 +211,10 @@ class DecodeClass:
                 }
                 '''
                 code = 'LDR'
-                Rd = bin(instr >> 7 & 0b1111)
+                Rd = instr >> 7 & 0b1111
                 immediate = instr >> 3 & 1
-                operand = bin(instr >> 11 & 0b1111111111111111)
-                offset = bin(instr >> 27 & 0b11111)
+                operand = instr >> 11 & 0b1111111111111111
+                offset = instr >> 27 & 0b11111
                 '''
 
             # STR
@@ -222,50 +222,50 @@ class DecodeClass:
                 instruction['execute'] = {}
                 instruction['memory'] = {
                     'code': 'LDR',
-                    'Rn': bin(instr >> 7 & 0b1111),
+                    'Rn': instr >> 7 & 0b1111,
                     'immediate': instr >> 3 & 1,
-                    'operand': bin(instr >> 11 & 0b1111111111111111),
-                    'offset': bin(instr >> 27 & 0b11111),
+                    'operand': instr >> 11 & 0b1111111111111111,
+                    'offset': instr >> 27 & 0b11111,
                     'timer': CycleTimer(1)
                 }
                 instruction['writeback'] = {
                     'code': 'LDR',
-                    'Rn': bin(instr >> 7 & 0b1111),
+                    'Rn': instr >> 7 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 '''
                 code = 'STR'
-                Rn = bin(instr >> 7 & 0b1111)
+                Rn = instr >> 7 & 0b1111
                 immediate = instr >> 3 & 1
-                operand = bin(instr >> 11 & 0b1111111111111111)
-                offset = bin(instr >> 27 & 0b11111)
+                operand = instr >> 11 & 0b1111111111111111
+                offset = instr >> 27 & 0b11111
                 '''
 
         # Branch type_code
         if type_code == 0b100:
 
-            opcode = bin(instr >> 4 & 0b1111)
+            opcode = instr >> 4 & 0b1111
 
             # BC
             if opcode == 0b010:
                 instruction['execute'] = {}
                 instruction['memory'] = {
                     'code': 'BC',
-                    'addressing': bin(instr >> 6 & 0b11),
-                    'operand1': bin(instr >> 8 & 0b11111),
-                    'operand2': bin(instr >> 13 & 0b1111111111111111111),
+                    'addressing': instr >> 6 & 0b11,
+                    'operand1': instr >> 8 & 0b11111,
+                    'operand2': instr >> 13 & 0b1111111111111111111,
                     'timer': CycleTimer(1)
                 }
                 instruction['writeback'] = {
                     'code': 'BC',
-                    'Rn': bin(instr >> 7 & 0b1111),
+                    'Rn': instr >> 7 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 '''
                 code = 'BC'
-                addressing = bin(instr >> 6 & 0b11)
-                operand1 = bin(instr >> 8 & 0b11111)
-                operand2 = bin(instr >> 13 & 0b1111111111111111111)
+                addressing = instr >> 6 & 0b11
+                operand1 = instr >> 8 & 0b11111
+                operand2 = instr >> 13 & 0b1111111111111111111
                 '''
 
         else:
@@ -280,7 +280,7 @@ class Execute:
         if instruction == None:
             return None
 
-        if instruction['execute']['code'].check_on() == WAIT:
+        if instruction['execute']['timer'].check_on() == WAIT:
             return (CycleStatus.WAIT, instruction)
 
         if instruction['execute'] == {}:
@@ -289,28 +289,28 @@ class Execute:
         # ADD
         if instruction['execute']['code'] == 'ADD':
             # value at register 1
-            val1 = CORE.GRegisters.read(instruction['execute'].Rn)
+            val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
             # If it is immediate
             if instruction['execute']['immediate'] == 1:
                 val2 = instruction['execute']['operand']
             # If it is register direct
             if instruction['execute']['immediate'] == 0:
-                val2 = CORE.GRegisters.read(bin(instruction['execute'].operand >> 27 & 0b1111))
+                val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
             instruction['result'] = GeneralALU.add(instruction, val1, val2)
 
         # CMP
-        if instruction['execute'].code == 'CMP':
+        if instruction['execute']['code'] == 'CMP':
             # value at register 1
-            val1 = CORE.GRegisters.read(instruction['execute'].Rn)
+            val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
             # If it is immediate
-            if instruction['execute'].immediate == 0:
-                val2 = instruction['execute'].operand
+            if instruction['execute']['immediate'] == 0:
+                val2 = instruction['execute']['operand']
             # If it is register direct
-            if instruction['execute'].immediate == 1:
-                val2 = CORE.GRegisters.read(bin(instruction['execute'].operand >> 27 & 0b1111))
+            if instruction['execute']['immediate'] == 1:
+                val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
@@ -327,37 +327,37 @@ class Write_Back:
         if instruction == None:
             return None
 
-        if instruction['writeback'].timer.check_on() == WAIT:
+        if instruction['writeback']['timer'].check_on() == WAIT:
             return (CycleStatus.WAIT, instruction)
 
         if instruction['writeback'] == {}:
             return (CycleStatus.DONE, instruction)
 
         # MOV
-        if instruction['writeback'].code == 'MOV':
-            if instruction['writeback'].immediate == 0:
-                val = instruction['writeback'].operand
+        if instruction['writeback']['code'] == 'MOV':
+            if instruction['writeback']['immediate'] == 0:
+                val = instruction['writeback']['operand']
             # If it is register direct
-            if instruction['writeback'].immediate == 1:
-                val = CORE.GRegisters.read(bin(instruction['writeback'].operand >> 27 & 0b1111))
+            if instruction['writeback']['immediate'] == 1:
+                val = CORE.GRegisters.read(instruction['writeback']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
-            CORE.GRegisters.set_and_write(instruction['writeback'].Rd, val)
+            CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], val)
 
         # ADD
-        if instruction['writeback'].code == 'ADD':
-            CORE.GRegisters.set_and_write(instruction['writeback'].Rd, instruction['result'])
+        if instruction['writeback']['code'] == 'ADD':
+            CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
 
         # LDR
-        if instruction['writeback'].code == 'LDR':
-            CORE.GRegisters.set_and_write(instruction['writeback'].Rd, instruction['result'])
+        if instruction['writeback']['code'] == 'LDR':
+            CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
 
         # STR
-        if instruction['writeback'].code == 'STR':
+        if instruction['writeback']['code'] == 'STR':
 
         # BC
-        if instruction['writeback'].code == 'BC':
+        if instruction['writeback']['code'] == 'BC':
 
         return (CycleStatus.DONE, instruction)
 
