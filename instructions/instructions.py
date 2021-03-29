@@ -1,6 +1,7 @@
 import struct
 from enum import Enum
 from memory.main import CycleTimer
+from memory.main import CycleStatus
 from alus.ALU import *
 from registers.RegisterBanks import *
 
@@ -300,7 +301,7 @@ class Execute:
         if instruction == None:
             return None
 
-        if instruction['execute']['timer'].check_on() == WAIT:
+        if instruction['execute']['timer'].check_on() == CycleStatus.WAIT:
             return (CycleStatus.WAIT, instruction)
 
         if instruction['execute'] == {}:
@@ -309,13 +310,13 @@ class Execute:
         # ADD
         if instruction['execute']['code'] == 'ADD':
             # value at register 1
-            val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
+            val1 = CORE.GRegisters.set_and_read(instruction['execute']['Rn'])
             # If it is immediate
             if instruction['execute']['immediate'] == 1:
                 val2 = instruction['execute']['operand']
             # If it is register direct
             if instruction['execute']['immediate'] == 0:
-                val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
+                val2 = CORE.GRegisters.set_and_read(instruction['execute']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
@@ -324,13 +325,13 @@ class Execute:
         # CMP
         if instruction['execute']['code'] == 'CMP':
             # value at register 1
-            val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
+            val1 = CORE.GRegisters.set_and_read(instruction['execute']['Rn'])
             # If it is immediate
             if instruction['execute']['immediate'] == 1:
                 val2 = instruction['execute']['operand']
             # If it is register direct
             if instruction['execute']['immediate'] == 0:
-                val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
+                val2 = CORE.GRegisters.set_and_read(instruction['execute']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
@@ -339,13 +340,13 @@ class Execute:
         # SHT
         if instruction['execute']['code'] == 'SHT':
             # value at register 1
-            val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
+            val1 = CORE.GRegisters.set_and_read(instruction['execute']['Rn'])
             # If it is immediate
             if instruction['execute']['immediate'] == 1:
                 val2 = instruction['execute']['operand']
             # If it is register direct
             if instruction['execute']['immediate'] == 0:
-                val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
+                val2 = CORE.GRegisters.set_and_read(instruction['execute']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
             
@@ -356,13 +357,13 @@ class Execute:
         # LGC
         if instruction['execute']['code'] == 'LGC':
             # value at register 1
-            val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
+            val1 = CORE.GRegisters.set_and_read(instruction['execute']['Rn'])
             # If it is immediate
             if instruction['execute']['immediate'] == 1:
                 val2 = instruction['execute']['operand']
             # If it is register direct
             if instruction['execute']['immediate'] == 0:
-                val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
+                val2 = CORE.GRegisters.set_and_read(instruction['execute']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
@@ -378,7 +379,7 @@ class Memory:
         if instruction == None:
             return None
 
-        if instruction['memory']['timer'].check_on() == WAIT:
+        if instruction['memory']['timer'].check_on() == CycleStatus.WAIT:
             return (CycleStatus.WAIT, instruction)
         
         if instruction['memory'] == {}:
@@ -386,13 +387,13 @@ class Memory:
 
         # STR (write)
         if instruction['memory']['code'] == 'STR':
-            val = CORE.GRegisters.read(instruction['memory']['Rn'])
+            val = CORE.GRegisters.set_and_read(instruction['memory']['Rn'])
             # If it is immediate
             if instruction['memory']['immediate'] == 1:
                 address = instruction['memory']['operand']
             # If it is register direct
             if instruction['memory']['immediate'] == 0:
-                address = CORE.GRegisters.read(instruction['memory']['operand'] >> 22 & 0b1111)
+                address = CORE.GRegisters.set_and_read(instruction['memory']['operand'] >> 22 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
@@ -403,7 +404,7 @@ class Memory:
         if instruction == None:
             return None
 
-        if instruction['memory']['timer'].check_on() == WAIT:
+        if instruction['memory']['timer'].check_on() == CycleStatus.WAIT:
             return (CycleStatus.WAIT, instruction)
         
         if instruction['memory'] == {}:
@@ -416,7 +417,7 @@ class Memory:
                 address = instruction['memory']['operand']
             # If it is register direct
             if instruction['memory']['immediate'] == 0:
-                address = CORE.GRegisters.read(instruction['memory']['operand'] >> 22 & 0b1111)
+                address = CORE.GRegisters.set_and_read(instruction['memory']['operand'] >> 22 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
@@ -430,7 +431,27 @@ class Memory:
                 address = instruction['memory']['operand']
             # If it is Register direct
             if instruction['memory']['addressing'] == 0b01:
-                address = CORE.GRegisters.read(instruction['memory']['operand'] >> 27 & 0b1111)
+                address = CORE.GRegisters.set_and_read(instruction['memory']['operand'] >> 27 & 0b1111)
+            # If it is Register indirect
+            if instruction['memory']['addressing'] == 0b10:
+                print('lol no')
+            # If it is PC + immediate
+            if instruction['memory']['addressing'] == 0b11:
+                address = CORE.pc.read() + instruction['memory']['operand']
+            else:
+                raise Exception("Wrong addressing mode")
+
+            # Write into Program Counter
+            CORE.pc.write(address)
+
+        # BC
+        if instruction['memory']['code'] == 'BC':
+            # If it is immediate
+            if instruction['memory']['addressing'] == 0b00:
+                address = instruction['memory']['operand']
+            # If it is Register direct
+            if instruction['memory']['addressing'] == 0b01:
+                address = CORE.GRegisters.set_and_read(instruction['memory']['operand'] >> 27 & 0b1111)
             # If it is Register indirect
             if instruction['memory']['addressing'] == 0b10:
                 print('lol no')
@@ -449,7 +470,7 @@ class Write_Back:
         if instruction == None:
             return None
 
-        if instruction['writeback']['timer'].check_on() == WAIT:
+        if instruction['writeback']['timer'].check_on() == CycleStatus.WAIT:
             return (CycleStatus.WAIT, instruction)
 
         if instruction['writeback'] == {}:
@@ -461,7 +482,7 @@ class Write_Back:
                 val = instruction['writeback']['operand']
             # If it is register direct
             if instruction['writeback']['immediate'] == 0:
-                val = CORE.GRegisters.read(instruction['writeback']['operand'] >> 27 & 0b1111)
+                val = CORE.GRegisters.set_and_read(instruction['writeback']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
