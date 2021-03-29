@@ -447,7 +447,7 @@ def load_store(instruction: dict, CORE):
             raise Exception("Wrong addressing mode")
 
         # Write
-        CORE.Memory.store(address, val)
+        CORE.memory.store(address, val)
 
     # LDR (read)
     if instruction['memory']['code'] == 'LDR':
@@ -461,7 +461,7 @@ def load_store(instruction: dict, CORE):
             raise Exception("Wrong addressing mode")
 
         # Read
-        instruction['result'] = CORE.Memory.query(address)
+        instruction['result'] = CORE.memory.query(address)
 
     else:
         raise Exception("Invalid instruction")
