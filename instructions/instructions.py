@@ -253,13 +253,13 @@ class DecodeClass:
 
             # INSTRUCTION: BX
             if opcode == 0b001:
-                instruction['execute'] = {}
-                instruction['memory'] = {
+                instruction['execute'] = {
                     'code': 'BX',
                     'addressing': instr >> 6 & 0b11,
                     'operand': instr >> 8 & 0b111111111111111111111111,
                     'timer': CycleTimer(1)
                 }
+                instruction['memory'] = {}
                 instruction['writeback'] = {}
                 '''
                 code = 'BX'
@@ -269,14 +269,14 @@ class DecodeClass:
 
             # INSTRUCTION: BC
             if opcode == 0b010:
-                instruction['execute'] = {}
-                instruction['memory'] = {
+                instruction['execute'] = {
                     'code': 'BC',
                     'addressing': instr >> 6 & 0b11,
                     'operand1': instr >> 8 & 0b11111,
                     'operand2': instr >> 13 & 0b1111111111111111111,
                     'timer': CycleTimer(1)
                 }
+                instruction['memory'] = {}
                 instruction['writeback'] = {}
                 '''
                 code = 'BC'
@@ -370,6 +370,59 @@ class Execute:
             logic = int(instruction['execute']['logic'], 2)
 
             instruction['result'] = CORE.GALU.lgc(logic, val1, val2)
+
+        # BX
+        if instruction['execute']['code'] == 'BX':
+            # If it is immediate
+            if instruction['execute']['addressing'] == 0b00:
+                address = instruction['execute']['operand']
+            # If it is Register direct
+            if instruction['execute']['addressing'] == 0b01:
+                address = CORE.GRegisters.set_and_read(instruction['execute']['operand'] >> 27 & 0b1111)
+            # If it is Register indirect
+            if instruction['execute']['addressing'] == 0b10:
+                print('lol no')
+            # If it is PC + immediate
+            if instruction['execute']['addressing'] == 0b11:
+                address = CORE.pc.read() + instruction['execute']['operand']
+            else:
+                raise Exception("Wrong addressing mode")
+
+            instruction['squashed'] = True
+
+            # Write into Program Counter
+            CORE.pc.write(address)
+
+        # BC
+        if instruction['execute']['code'] == 'BC':
+            # Check if condition is true
+            status_bit_offset = instruction['execute']['operand1']
+            status = CORE.status.read()
+            if status >> status_bit_offset != 1:
+                return (CycleStatus.DONE, None)
+
+            # If it is immediate
+            if instruction['execute']['addressing'] == 0b00:
+                address = instruction['execute']['operand2']
+            # If it is Register direct
+            if instruction['execute']['addressing'] == 0b01:
+                address = CORE.GRegisters.set_and_read(instruction['execute']['operand2'] >> 27 & 0b1111)
+            # If it is Register indirect
+            if instruction['execute']['addressing'] == 0b10:
+                print('lol no')
+            # If it is PC + immediate
+            if instruction['execute']['addressing'] == 0b11:
+                address = CORE.pc.read() + instruction['execute']['operand2']
+            else:
+                raise Exception("Wrong addressing mode")
+
+            instruction['squashed'] = True 
+
+            # Write into Program Counter
+            CORE.pc.write(address)
+
+        else:
+            raise Exception("Invalid instruction")
             
         return (CycleStatus.DONE, instruction)
 
@@ -400,6 +453,11 @@ class Memory:
             # Write
             CORE.Memory.store(address, val)
 
+        else:
+            raise Exception("Invalid instruction")
+        
+        return (CycleStatus.DONE, instruction)
+
     def load(self, instruction: dict, CORE):
         if instruction == None:
             return None
@@ -424,45 +482,10 @@ class Memory:
             # Read
             instruction['result'] = CORE.Memory.query(address)
 
-        # BX
-        if instruction['memory']['code'] == 'BX':
-            # If it is immediate
-            if instruction['memory']['addressing'] == 0b00:
-                address = instruction['memory']['operand']
-            # If it is Register direct
-            if instruction['memory']['addressing'] == 0b01:
-                address = CORE.GRegisters.set_and_read(instruction['memory']['operand'] >> 27 & 0b1111)
-            # If it is Register indirect
-            if instruction['memory']['addressing'] == 0b10:
-                print('lol no')
-            # If it is PC + immediate
-            if instruction['memory']['addressing'] == 0b11:
-                address = CORE.pc.read() + instruction['memory']['operand']
-            else:
-                raise Exception("Wrong addressing mode")
+        else:
+            raise Exception("Invalid instruction")
 
-            # Write into Program Counter
-            CORE.pc.write(address)
-
-        # BC
-        if instruction['memory']['code'] == 'BC':
-            # If it is immediate
-            if instruction['memory']['addressing'] == 0b00:
-                address = instruction['memory']['operand']
-            # If it is Register direct
-            if instruction['memory']['addressing'] == 0b01:
-                address = CORE.GRegisters.set_and_read(instruction['memory']['operand'] >> 27 & 0b1111)
-            # If it is Register indirect
-            if instruction['memory']['addressing'] == 0b10:
-                print('lol no')
-            # If it is PC + immediate
-            if instruction['memory']['addressing'] == 0b11:
-                address = CORE.pc.read() + instruction['memory']['operand']
-            else:
-                raise Exception("Wrong addressing mode")
-
-            # Write into Program Counter
-            CORE.pc.write(address)
+        return (CycleStatus.DONE, instruction)
 
 class Write_Back:
 
