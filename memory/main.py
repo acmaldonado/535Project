@@ -27,6 +27,8 @@ class CycleTimer():
     def check_on(self, address):
         # print(f'Checking a timer with wait time of {self.curr_wait_time}')
         if self.curr_working_address is None:
+            if self.wait_time == 1:
+                return CycleStatus.DONE
             self.curr_wait_time = self.wait_time
             self.curr_working_address = address
             # print('self.curr_working_address was none')

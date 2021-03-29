@@ -38,7 +38,7 @@ class FetchStage:
         self.instruction = core.memory.query(pc.read())
         if self.instruction[0] != CycleStatus.WAIT:
             pc.write(pc.read() + 1)
-            if self.instruction == 4294967295:
+            if self.instruction[1] == 4294967295:
                 self.ended = True
 
         if not self.enabled:
@@ -102,6 +102,8 @@ class ExecuteStage:
             self.decode.decode_cycle(CycleStatus.WAIT, pc, core)
             return None
 
+        print(f"passing {self.executed} to execute")
+
         self.executed = execute(self.executed[1], core)
 
         if self.executed[0] == CycleStatus.SQUASH:
@@ -133,6 +135,8 @@ class MemoryStage:
             self.execute.execute_cycle(CycleStatus.WAIT, pc, core, pipe)
             return None
         
+        print(f"passing {self.memorized} to memory")
+
         self.memorized = load_store(self.memorized[1], core)
 
         if self.memorized[0] == CycleStatus.WAIT or status == CycleStatus.WAIT:
@@ -150,6 +154,8 @@ class WritebackStage:
         self.enabled = True
 
     def writeback_cycle(self, pc, core, pipe):
+        print(f"passing {self.written} to writeback")
+
         if self.written is not None:
             self.written = write_back(self.written[1], core)
 
