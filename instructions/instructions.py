@@ -35,6 +35,7 @@ def decode(instr: int):
     }
 
     instr = format(instr, '032b')
+    print(instr)
     type_code = instr[0:3]
     
     # Data type_code
