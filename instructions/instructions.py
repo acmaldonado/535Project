@@ -196,7 +196,7 @@ def decode(instr: int):
     # Load/Store type_code
     elif type_code == '011':
         
-        opcode = instr[4:8]
+        opcode = instr[4:7]
 
         # INSTRUCTION: LDR
         if opcode == '000':
@@ -248,7 +248,7 @@ def decode(instr: int):
     # Branch type_code
     elif type_code == '100':
 
-        opcode = instr[4:8]
+        opcode = instr[4:7]
 
         # INSTRUCTION: BX
         if opcode == '001':
