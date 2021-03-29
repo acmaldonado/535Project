@@ -295,8 +295,8 @@ def decode(instr: int):
 
 
 def execute(instruction: dict, CORE):
-    if instruction == None:
-        return None
+    if instruction is None:
+        return (CycleStatus.DONE, None)
 
     if instruction['execute']['timer'].check_on() == CycleStatus.WAIT:
         return (CycleStatus.WAIT, instruction)
@@ -425,8 +425,8 @@ def execute(instruction: dict, CORE):
 
 
 def load_store(instruction: dict, CORE):
-    if instruction == None:
-        return None
+    if instruction is None:
+        return (CycleStatus.DONE, None)
 
     if instruction['memory']['timer'].check_on() == CycleStatus.WAIT:
         return (CycleStatus.WAIT, instruction)
@@ -470,8 +470,8 @@ def load_store(instruction: dict, CORE):
 
 
 def write_back(instruction: dict, CORE):
-    if instruction == None:
-        return None
+    if instruction is None:
+        return (CycleStatus.DONE, None)
 
     if instruction['writeback']['timer'].check_on() == CycleStatus.WAIT:
         return (CycleStatus.WAIT, instruction)
