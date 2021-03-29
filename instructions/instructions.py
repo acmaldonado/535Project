@@ -186,20 +186,20 @@ def decode(instr: int):
             # TODO: Add more ALU instructions
 
     # Vector type_code    
-    elif type_code == 0b001:
+    elif type_code == '001':
         pass
 
     # Float type_code    
-    elif type_code == 0b010:
+    elif type_code == '010':
         pass
 
     # Load/Store type_code
-    elif type_code == 0b011:
+    elif type_code == '011':
         
-        opcode = instr >> 4 & 0b1111
+        opcode = instr[4:8]
 
         # INSTRUCTION: LDR
-        if opcode == 0b000:
+        if opcode == '000':
             instruction['execute'] = {}
             instruction['memory'] = {
                 'code': 'LDR',
@@ -224,7 +224,7 @@ def decode(instr: int):
             '''
 
         # INSTRUCTION: STR
-        elif opcode == 0b001:
+        elif opcode == '001':
             instruction['execute'] = {}
             instruction['memory'] = {
                 'code': 'LDR',
@@ -246,13 +246,12 @@ def decode(instr: int):
             '''
 
     # Branch type_code
-    elif type_code == 0b100:
+    elif type_code == '100':
 
-        opcode = instr >> 4 & 0b1111
-
+        opcode = instr[4:8]
 
         # INSTRUCTION: BX
-        if opcode == 0b001:
+        if opcode == '001':
             instruction['execute'] = {
                 'code': 'BX',
                 'addressing': int(instr[6:8], 2),
@@ -268,7 +267,7 @@ def decode(instr: int):
             '''
 
         # INSTRUCTION: BC
-        elif opcode == 0b010:
+        elif opcode == '010':
             instruction['execute'] = {
                 'code': 'BC',
                 'addressing': instr[6:8],
