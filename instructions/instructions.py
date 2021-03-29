@@ -304,7 +304,7 @@ def execute(instruction: dict, CORE):
     if instruction['execute'] == {}:
         return (CycleStatus.DONE, instruction)
 
-    if instruction['execute']['timer'].check_on() == CycleStatus.WAIT:
+    if instruction['execute']['timer'].check_on(3735928559) == CycleStatus.WAIT:
         return (CycleStatus.WAIT, instruction)
     
     # ADD
@@ -434,7 +434,7 @@ def load_store(instruction: dict, CORE):
     if instruction['memory'] == {}:
         return (CycleStatus.DONE, instruction)
 
-    if instruction['memory']['timer'].check_on() == CycleStatus.WAIT:
+    if instruction['memory']['timer'].check_on(3735928559) == CycleStatus.WAIT:
         return (CycleStatus.WAIT, instruction)
 
     # STR (write)
@@ -479,7 +479,7 @@ def write_back(instruction: dict, CORE):
     if instruction['writeback'] == {}:
         return (CycleStatus.DONE, instruction)
 
-    if instruction['writeback']['timer'].check_on() == CycleStatus.WAIT:
+    if instruction['writeback']['timer'].check_on(3735928559) == CycleStatus.WAIT:
         return (CycleStatus.WAIT, instruction)
 
     # MOV
