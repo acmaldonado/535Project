@@ -528,12 +528,3 @@ class Write_Back:
             CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
 
         return (CycleStatus.DONE, instruction)
-
-
-        '''
-        TODO:
-        * Change GeneralRegisters to CORE
-        * Change Dictionary references to []
-        * FUCKING DELETE BINS
-        * Finish
-        '''
