@@ -451,6 +451,7 @@ def load_store(instruction: dict, CORE):
 
         # Write
         status = CORE.memory.store(address, val)
+        print(status)
         return (status, instruction)
 
     # LDR (read)
