@@ -483,10 +483,10 @@ def write_back(instruction: dict, CORE):
 
     # MOV
     if instruction['writeback']['code'] == 'MOV':
-        if instruction['writeback']['immediate'] == 1:
+        if instruction['writeback']['immediate'] == '1':
             val = instruction['writeback']['operand']
         # If it is register direct
-        if instruction['writeback']['immediate'] == 0:
+        if instruction['writeback']['immediate'] == '0':
             val = CORE.GRegisters.set_and_read(instruction['writeback']['operand'][27:32])
         else:
             raise Exception("Wrong addressing mode")
