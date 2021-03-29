@@ -470,6 +470,23 @@ def load_store(instruction: dict, CORE):
         instruction['result'] = results[1]
         return (results[0], instruction)
 
+    # CMP TODO: fix compares
+    elif instruction['memory']['code'] == 'CMP':
+        result = instruction['result']
+        status_reg = CORE.status.read()
+        status_reg = format(status_reg, '032b')
+        
+        if result == 1:
+            status_reg[1] == '1'
+        elif result == -1:
+            status_reg[2] == '1'
+        elif result == 0:
+            status_reg[0] == '1'
+        
+        status_reg = int(status_reg, 2)
+        result = CORE.status.write(status_reg)
+        return (result, instruction)
+
     else:
         raise Exception("Invalid instruction")
 
