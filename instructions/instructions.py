@@ -70,8 +70,8 @@ def decode(instr: int):
                 'code': 'CMP',
                 'immediate': instr[3],
                 'set_status': instr[8],
-                'Rn': instr >>[9:13],
-                'operand': instr >>[13:32],
+                'Rn': instr[9:13],
+                'operand': instr[13:32],
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {
