@@ -1,3 +1,9 @@
+import sys
+import os
+from memory.main import *
+
+dir_path = os.path.dirname(os.path.realpath(__file__)) + '\\assembler'
+
 def interpret_asm_line(line):
     tokens = line.lower().split(' ')
 
@@ -155,16 +161,40 @@ def interpret_asm_line(line):
     else:
         return "unknown command"
 
+def translate_asm_to_bin(asm_file, bin_file):
+    with open(dir_path + '\\' + asm_file, 'r') as asmf:
+        lines = asmf.readlines()
+
+    with open(dir_path + '\\' + bin_file, 'w') as binf:
+        count = 0
+        for line in lines:
+            binf.write(f'{count} {int(interpret_asm_line(line), 2)}\n')
+            count+=1
+    
+def generate_memory_from_bin(bin_file):
+    memory_system = Memory(16, {"layers":2,"sizes":[8,16]})
+
+    with open(dir_path + '\\' + bin_file, 'r') as binf:
+        lines = binf.readlines()
+    
+    for line in lines:
+        inp = line.split(' ')
+        result = None
+        while result != CycleStatus.DONE:
+            result = memory_system.store(int(inp[0]), int(inp[1]))
+
+    parsed_bin = bin_file[:len(bin_file)-4] + '.json'
+
+    with open(dir_path + '\\' + parsed_bin, 'w') as pbinf:
+        pbinf.write(jsonpickle.encode(memory_system))
+
+def asm_to_memory(asm_file, bin_file):
+    translate_asm_to_bin(asm_file, bin_file)
+    generate_memory_from_bin(bin_file)
+    
+
 if __name__ == '__main__':
-    test_command = None
-
-    while test_command != 'quit':
-
-        test_command = input('input asm command:')
-        if test_command == 'quit':
-            continue
-        output = interpret_asm_line(test_command)
-        print(f'Binary value: {output}, Int value: {int(output, 2)}')
+    asm_to_memory(sys.argv[1], sys.argv[2])
 
 
         

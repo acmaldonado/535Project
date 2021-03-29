@@ -6,20 +6,22 @@ class FetchStage:
 
     def __init__(self, memory):
         self.memory = memory
-        self.instruction = None, None
+        self.instruction = CycleStatus.WAIT, None
         self.enabled = True
         self.fetch_flag = True
         self.ended = False
     
 
-    def fetch_cycle(self, status, pc):
+    def fetch_cycle(self, status, pc, core):
+        print(f'fetching cycle instr: {self.instruction}, enabled: {self.enabled}, fetch_flag: {self.fetch_flag}, ended: {self.ended}, stat: {status}, pc: {pc.read()}')
+
         if not self.enabled and not self.fetch_flag:
             return CycleStatus.WAIT, None
 
         if self.ended:
             return CycleStatus.WAIT, None
 
-        if self.instruction is None:
+        '''if self.instruction is None:
             self.instruction = self.memory.query(pc)
             if self.instruction[0] == CycleStatus.WAIT:
                 return CycleStatus.WAIT, None
@@ -27,20 +29,17 @@ class FetchStage:
                 if self.instruction[1] == 4294967295:
                     self.ended = True
                 pc.write(pc.read() + 1)
-            return CycleStatus.WAIT, None
+            return CycleStatus.WAIT, None'''
             
         if status == CycleStatus.WAIT:
             return CycleStatus.WAIT, None 
 
         curr_instruction = self.instruction
-        self.instruction = self.memory.query(pc.read())
-        if self.instruction[0] == CycleStatus.WAIT:
-            return CycleStatus.WAIT, None
-        else:
+        self.instruction = core.memory.query(pc.read())
+        if self.instruction[0] != CycleStatus.WAIT:
             pc.write(pc.read() + 1)
             if self.instruction == 4294967295:
                 self.ended = True
-                return CycleStatus.WAIT, None
 
         if not self.enabled:
             self.fetch_flag = False
@@ -64,11 +63,11 @@ class DecodeStage:
 
     def decode_cycle(self, status, pc, core):
         if self.decoded is None:
-            self.decoded = self.fetch.fetch_cycle(CycleStatus.DONE, pc)
+            self.decoded = self.fetch.fetch_cycle(CycleStatus.DONE, pc, core)
             return None
 
         if self.decoded[0] == CycleStatus.DONE and status == CycleStatus.WAIT:
-            self.fetch.fetch_cycle(CycleStatus.WAIT, pc)
+            self.fetch.fetch_cycle(CycleStatus.WAIT, pc, core)
             return None
 
         print(f"passing {self.decoded} to decode")
@@ -80,7 +79,7 @@ class DecodeStage:
             return None
         else:
             decoded_to_return = CycleStatus.WAIT, self.decoded[1]
-            self.decoded = self.fetch.fetch_cycle(CycleStatus.DONE, pc)
+            self.decoded = self.fetch.fetch_cycle(CycleStatus.DONE, pc, core)
             return decoded_to_return
     
     def squash(self):
