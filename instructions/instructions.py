@@ -263,6 +263,10 @@ def decode(instr: int):
             '''
             code = 'BX'
             addressing = instr >> 6 & 0b11
+                00 - Immediate
+                01 -  Register direct
+                10 - Register indirect
+                11 - PC + immediate
             operand = instr >> 8 & 0b111111111111111111111111
             '''
 
