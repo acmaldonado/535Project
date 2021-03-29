@@ -271,7 +271,7 @@ def decode(instr: int):
         elif opcode == 0b010:
             instruction['execute'] = {
                 'code': 'BC',
-                'addressing': int(instr[6:8], 2),
+                'addressing': instr[6:8],
                 'operand1': instr[8:13],
                 'operand2': instr[13:32],
                 'timer': CycleTimer(1)
@@ -316,7 +316,7 @@ def execute(instruction: dict, CORE):
             val2 = int(instruction['execute']['operand'], 2)
         # If it is register direct
         elif instruction['execute']['immediate'] == 0:
-            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][27:32], 2))
+            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand']-4):], 2))
         else:
             raise Exception("Wrong addressing mode")
 
@@ -331,7 +331,7 @@ def execute(instruction: dict, CORE):
             val2 = int(instruction['execute']['operand'], 2)
         # If it is register direct
         elif instruction['execute']['immediate'] == 0:
-            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][27:32], 2))
+            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand']-4):], 2))
         else:
             raise Exception("Wrong addressing mode")
 
@@ -346,7 +346,7 @@ def execute(instruction: dict, CORE):
             val2 = int(instruction['execute']['operand'], 2)
         # If it is register direct
         elif instruction['execute']['immediate'] == 0:
-            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][27:32], 2))
+            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand']-4):], 2))
         else:
             raise Exception("Wrong addressing mode")
         
@@ -363,11 +363,11 @@ def execute(instruction: dict, CORE):
             val2 = int(instruction['execute']['operand'], 2)
         # If it is register direct
         elif instruction['execute']['immediate'] == 0:
-            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][27:32], 2))
+            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand']-4):], 2))
         else:
             raise Exception("Wrong addressing mode")
 
-        logic = int(instruction['execute']['logic'], 2)
+        logic = instruction['execute']['logic']
 
         instruction['result'] = CORE.GALU.lgc(logic, val1, val2)
 
@@ -378,7 +378,7 @@ def execute(instruction: dict, CORE):
             address = int(instruction['execute']['operand'], 2)
         # If it is Register direct
         elif instruction['execute']['addressing'] == 0b01:
-            address = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][27:32], 2))
+            address = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand']-4):], 2))
         # If it is Register indirect
         elif instruction['execute']['addressing'] == 0b10:
             print('lol no')
@@ -407,7 +407,7 @@ def execute(instruction: dict, CORE):
             address = int(instruction['execute']['operand2'], 2)
         # If it is Register direct
         elif instruction['execute']['addressing'] == 0b01:
-            address = CORE.GRegisters.set_and_read(int(instruction['execute']['operand2'][27:32], 2))
+            address = CORE.GRegisters.set_and_read(int(instruction['execute']['operand2'][len(instruction['execute']['operand2']-4):], 2))
         # If it is Register indirect
         elif instruction['execute']['addressing'] == 0b10:
             print('lol no')
@@ -446,7 +446,7 @@ def load_store(instruction: dict, CORE):
             address = int(instruction['memory']['operand'], 2)
         # If it is register direct
         elif instruction['memory']['immediate'] == 0:
-            address = CORE.GRegisters.set_and_read(int(instruction['memory']['operand'][22:26], 2))
+            address = CORE.GRegisters.set_and_read(int(instruction['memory']['operand'][len(instruction['memory']['operand']-4):], 2))
         else:
             raise Exception("Wrong addressing mode")
 
@@ -460,7 +460,7 @@ def load_store(instruction: dict, CORE):
             address = int(instruction['memory']['operand'], 2)
         # If it is register direct
         elif instruction['memory']['immediate'] == 0:
-            address = CORE.GRegisters.set_and_read(int(instruction['memory']['operand'][22:26], 2))
+            address = CORE.GRegisters.set_and_read(int(instruction['memory']['operand'][len(instruction['memory']['operand']-4):], 2))
         else:
             raise Exception("Wrong addressing mode")
 
@@ -489,7 +489,7 @@ def write_back(instruction: dict, CORE):
             val = int(instruction['writeback']['operand'], 2)
         # If it is register direct
         elif instruction['writeback']['immediate'] == 0:
-            val = CORE.GRegisters.set_and_read(int(instruction['writeback']['operand'][27:32], 2))
+            val = CORE.GRegisters.set_and_read(int(instruction['writeback']['operand'][len(instruction['writeback']['operand']-4):], 2))
         else:
             raise Exception("Wrong addressing mode")
 
