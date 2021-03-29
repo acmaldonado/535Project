@@ -32,7 +32,7 @@ class GeneralRegisterBank(RegisterBank):
             self.read_register = num
 
     def read(self) -> int:
-        return self.registers[self.read_register]
+        return self.registers[self.read_register].read()
 
     def set_and_read(self, num: int) -> int:
         self.set_read_num(num)
@@ -43,7 +43,7 @@ class GeneralRegisterBank(RegisterBank):
             self.write_register = num
 
     def write(self, data: int) -> None:
-        self.registers[self.write_register] = data
+        self.registers[self.write_register].write(data)
 
     def set_and_write(self, num: int, data: int) -> None:
         self.set_write_num(num)
