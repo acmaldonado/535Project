@@ -25,8 +25,7 @@ class InstructionStatus(Enum):
     DONE = 1
 
 class DecodeClass: 
-
-    
+  
     def decode(self, instr: int):
         instruction = {
             'execute': {},
@@ -182,7 +181,8 @@ class DecodeClass:
                     set_status = instr >> 8 & 1
                     operand = instr >> 17 & 0b111111111111111
                     '''
-                # Missing opcodes
+                
+                # TODO: Add more ALU instructions
 
         # Vector type_code    
         if type_code == 0b001:
@@ -255,16 +255,15 @@ class DecodeClass:
                 instruction['execute'] = {}
                 instruction['memory'] = {
                     'code': 'BX',
-                    'Rn': instr >> 10 & 0b1111,
-                    'Rd': instr >> 14 & 0b111111111111111111,
+                    'addressing': instr >> 6 & 0b11,
+                    'operand': instr >> 8 & 0b111111111111111111111111,
                     'timer': CycleTimer(1)
                 }
                 instruction['writeback'] = {}
                 '''
                 code = 'BX'
-                Rn = instr >> 6 & 0b1111
-                Rd = instr >> 10 & 0b1111
-                operand = instr >> 14 & 0b111111111111111111
+                addressing = instr >> 6 & 0b11
+                operand = instr >> 8 & 0b111111111111111111111111
                 '''
 
             # INSTRUCTION: BC
@@ -281,6 +280,10 @@ class DecodeClass:
                 '''
                 code = 'BC'
                 addressing = instr >> 6 & 0b11
+                    00 - Immediate
+                    01 -  Register direct
+                    10 - Register indirect
+                    11 - PC + immediate
                 operand1 = instr >> 8 & 0b11111
                 operand2 = instr >> 13 & 0b1111111111111111111
                 '''
@@ -363,7 +366,7 @@ class Execute:
             else:
                 raise Exception("Wrong addressing mode")
 
-            logic = instruction['execute']['logic']
+            logic = int(instruction['execute']['logic'], 2)
 
             instruction['result'] = CORE.GALU.lgc(logic, val1, val2)
             
@@ -407,7 +410,7 @@ class Memory:
             return (CycleStatus.DONE, instruction)
 
         # LDR (read)
-        if instruction['memory']['code'] == 'STR':
+        if instruction['memory']['code'] == 'LDR':
             # If it is immediate
             if instruction['memory']['immediate'] == 1:
                 address = instruction['memory']['operand']
@@ -420,6 +423,25 @@ class Memory:
             # Read
             instruction['result'] = CORE.Memory.query(address)
 
+        # BX
+        if instruction['memory']['code'] == 'BX':
+            # If it is immediate
+            if instruction['memory']['addressing'] == 0b00:
+                address = instruction['memory']['operand']
+            # If it is Register direct
+            if instruction['memory']['addressing'] == 0b01:
+                address = CORE.GRegisters.read(instruction['memory']['operand'] >> 27 & 0b1111)
+            # If it is Register indirect
+            if instruction['memory']['addressing'] == 0b10:
+                print('lol no')
+            # If it is PC + immediate
+            if instruction['memory']['addressing'] == 0b11:
+                address = CORE.pc.read() + instruction['memory']['operand']
+            else:
+                raise Exception("Wrong addressing mode")
+
+            # Write into Program Counter
+            CORE.pc.write(address)
 
 class Write_Back:
 
