@@ -65,13 +65,13 @@ def decode(instr: int):
             '''
 
         # INSTRUCTION: CMP
-        if opcode == 0b1001:
+        if opcode == '1001':
             instruction['execute'] = {
                 'code': 'CMP',
-                'immediate': instr >> 3 & 1,
-                'set_status': instr >> 8 & 1,
-                'Rn': instr >> 9 & 0b1111,
-                'operand': instr >> 13 & 0b1111111111111111111,
+                'immediate': instr[3],
+                'set_status': instr[8],
+                'Rn': instr >>[9:13],
+                'operand': instr >>[13:32],
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {
@@ -90,20 +90,20 @@ def decode(instr: int):
             '''
 
         # INSTRUCTION: SHT
-        if opcode == 0b1000:
+        if opcode == '1000':
             instruction['execute'] = {
                 'code': 'SHT',
-                'immediate': instr >> 3 & 1,
-                'set_status': instr >> 8 & 1,
-                'Rn': instr >> 9 & 0b1111,
-                'arithmethic': instr >> 17 & 1,
-                'operand': instr >> 18 & 0b11111111111111,
+                'immediate': instr[3],
+                'set_status': instr[8],
+                'Rn': instr[9:13],
+                'arithmethic':[17],
+                'operand': instr[18:32],
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {}
             instruction['writeback'] = {
                 'code': 'SHT',
-                'Rd': instr >> 13 & 0b1111,
+                'Rd': instr[13:17],
                 'timer': CycleTimer(1)
             }
             '''
@@ -121,7 +121,7 @@ def decode(instr: int):
             '''
         
         # INSTRUCTION: LGC
-        if opcode == 0b1010:
+        if opcode == '1010':
             instruction['execute'] = {
                 'code': 'LGC',
                 'immediate': instr >> 3 & 1,
@@ -487,7 +487,7 @@ def write_back(instruction: dict, CORE):
             val = instruction['writeback']['operand']
         # If it is register direct
         if instruction['writeback']['immediate'] == 0:
-            val = CORE.GRegisters.set_and_read(instruction['writeback']['operand'] >> 27 & 0b1111)
+            val = CORE.GRegisters.set_and_read(instruction['writeback']['operand'][27:32])
         else:
             raise Exception("Wrong addressing mode")
 
