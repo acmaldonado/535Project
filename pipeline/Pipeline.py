@@ -11,7 +11,7 @@ class FetchStage:
         self.ended = False
     
 
-    def fetch_cycle(self, pc):
+    def fetch_cycle(self, status, pc):
         if not self.enabled and not self.fetch_flag:
             return None
 
