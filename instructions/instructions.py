@@ -22,7 +22,10 @@ Branch: 100
 '''
 
   
-def decode(self, instr: int):
+def decode(instr: int):
+    if instr is None:
+        return CycleStatus.DONE, None
+
     instruction = {
         'execute': {},
         'memory': {},
@@ -291,7 +294,7 @@ def decode(self, instr: int):
 
 
 
-def execute(self, instruction: dict, CORE):
+def execute(instruction: dict, CORE):
     if instruction == None:
         return None
 
@@ -421,7 +424,7 @@ def execute(self, instruction: dict, CORE):
     return (CycleStatus.DONE, instruction)
 
 
-def load_store(self, instruction: dict, CORE):
+def load_store(instruction: dict, CORE):
     if instruction == None:
         return None
 
@@ -466,7 +469,7 @@ def load_store(self, instruction: dict, CORE):
     return (CycleStatus.DONE, instruction)
 
 
-def write_back(self, instruction: dict, CORE):
+def write_back(instruction: dict, CORE):
     if instruction == None:
         return None
 

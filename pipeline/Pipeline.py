@@ -1,11 +1,12 @@
 from enum import Enum
 from memory.main import CycleStatus
+from instructions.instructions import *
 
 class FetchStage:
 
     def __init__(self, memory):
         self.memory = memory
-        self.instruction = None
+        self.instruction = None, None
         self.enabled = True
         self.fetch_flag = True
         self.ended = False
@@ -13,31 +14,37 @@ class FetchStage:
 
     def fetch_cycle(self, status, pc):
         if not self.enabled and not self.fetch_flag:
-            return None
+            return CycleStatus.WAIT, None
 
         if self.ended:
-            return None
+            return CycleStatus.WAIT, None
 
         if self.instruction is None:
             self.instruction = self.memory.query(pc)
-            pc.write(pc.read() + 1)
-            if self.instruction == 4294967295:
-                self.ended = True
-            return None
+            if self.instruction[0] == CycleStatus.WAIT:
+                return CycleStatus.WAIT, None
+            else:
+                if self.instruction[1] == 4294967295:
+                    self.ended = True
+                pc.write(pc.read() + 1)
+            return CycleStatus.WAIT, None
             
         if status == CycleStatus.WAIT:
-            return None 
+            return CycleStatus.WAIT, None 
 
         curr_instruction = self.instruction
         self.instruction = self.memory.query(pc.read())
-        pc.write(pc.read() + 1)
-        if self.instruction == 4294967295:
-            self.ended = True
-            return None
+        if self.instruction[0] == CycleStatus.WAIT:
+            return CycleStatus.WAIT, None
+        else:
+            pc.write(pc.read() + 1)
+            if self.instruction == 4294967295:
+                self.ended = True
+                return CycleStatus.WAIT, None
 
         if not self.enabled:
             self.fetch_flag = False
-        return CycleStatus.WAIT, curr_instruction
+        return CycleStatus.WAIT, curr_instruction[1]
 
     def toggle_enabled(self):
         self.enabled = not self.enabled
@@ -64,7 +71,9 @@ class DecodeStage:
             self.fetch.fetch_cycle(CycleStatus.WAIT, pc)
             return None
 
-        #decode here
+        print(f"passing {self.decoded} to decode")
+
+        self.decoded = decode(self.decoded[1])
 
         if self.decoded[0] == CycleStatus.WAIT or status == CycleStatus.WAIT:
             self.fetch.fetch_cycle(CycleStatus.WAIT, pc, core)
@@ -85,7 +94,7 @@ class ExecuteStage:
         self.decode = decode
         self.executed = None
 
-    def execute_cycle(self, status, pc, core):
+    def execute_cycle(self, status, pc, core, pipe):
         if self.executed is None:
             self.executed = self.decode.decode_cycle(CycleStatus.DONE, pc, core)
             return None
@@ -94,7 +103,10 @@ class ExecuteStage:
             self.decode.decode_cycle(CycleStatus.WAIT, pc, core)
             return None
 
-        #execute here
+        self.executed = execute(self.executed[1], core)
+
+        if self.executed[0] == CycleStatus.SQUASH:
+            pipe.squash()
 
         if self.executed[0] == CycleStatus.WAIT or status == CycleStatus.WAIT:
             self.decode.decode_cycle(CycleStatus.WAIT, pc, core)
@@ -115,23 +127,20 @@ class MemoryStage:
 
     def memory_cycle(self, status, pc, core, pipe):
         if self.memorized is None:
-            self.memorized = self.execute.execute_cycle(CycleStatus.DONE, pc, core)
+            self.memorized = self.execute.execute_cycle(CycleStatus.DONE, pc, core, pipe)
             return None
 
         if (self.memorized[0] == CycleStatus.DONE or self.memorized[0] == CycleStatus.SQUASH) and status == CycleStatus.WAIT:
-            self.execute.execute_cycle(CycleStatus.WAIT, pc, core)
+            self.execute.execute_cycle(CycleStatus.WAIT, pc, core, pipe)
             return None
         
-        #access memory here
-
-        if self.memorized[0] == CycleStatus.SQUASH:
-            pipe.squash()
+        self.memorized = load_store(self.memorized[1], core)
 
         if self.memorized[0] == CycleStatus.WAIT or status == CycleStatus.WAIT:
-            self.execute.execute_cycle(CycleStatus.WAIT, pc, core)
+            self.execute.execute_cycle(CycleStatus.WAIT, pc, core, pipe)
         else:
             memorized_to_return = CycleStatus.WAIT, self.memorized[1]
-            self.memorized = self.execute.execute_cycle(CycleStatus.DONE, pc, core)
+            self.memorized = self.execute.execute_cycle(CycleStatus.DONE, pc, core, pipe)
             return memorized_to_return
 class WritebackStage:
 
@@ -142,7 +151,9 @@ class WritebackStage:
         self.enabled = True
 
     def writeback_cycle(self, pc, core, pipe):
-        #writeback here
+        if self.written is not None:
+            self.written = write_back(self.written[1], core)
+
         if self.written is not None and self.written[0] == CycleStatus.WAIT:
             self.memory.memory_cycle(CycleStatus.WAIT, pc, core, pipe)
         else:

@@ -149,13 +149,22 @@ def interpret_asm_line(line):
         command = instr_type + immediate + instr_opcode + signal + operand1 + destination + value
         return command
 
+    elif tokens[0] == 'end':
+        return '11111111111111111111111111111111'
+
     else:
         return "unknown command"
 
 if __name__ == '__main__':
-    test_command = input('input asm command:')
-    output = interpret_asm_line(test_command)
-    print(f'Binary value: {output}, Int value: {int(output, 2)}')
+    test_command = None
+
+    while test_command != 'quit':
+
+        test_command = input('input asm command:')
+        if test_command == 'quit':
+            continue
+        output = interpret_asm_line(test_command)
+        print(f'Binary value: {output}, Int value: {int(output, 2)}')
 
 
         
