@@ -491,7 +491,7 @@ def write_back(instruction: dict, CORE):
         else:
             raise Exception("Wrong addressing mode")
 
-        CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], val)
+        CORE.GRegisters.set_and_write(int(instruction['writeback']['Rd'], 2), val)
 
     # ADD
     elif instruction['writeback']['code'] == 'ADD':
