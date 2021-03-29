@@ -34,23 +34,24 @@ def decode(instr: int):
         'result': None
     }
 
-    type_code = instr & 0b111
+    instr = format(instr, '032b')
+    type_code = instr[0:3]
     
     # Data type_code
-    if type_code == 0b000:
+    if type_code == '000':
 
-        opcode = instr >> 4 & 0b1111
+        opcode = instr[4:8]
 
         # INSTRUCTION: MOV
-        if opcode == 0b0000:
+        if opcode == '0000':
             instruction['execute'] = {}
             instruction['memory'] = {}
             instruction['writeback'] = {
                 'code': 'MOV',
-                'Rd': instr >> 9 & 0b1111,
-                'immediate': instr >> 3 & 1,
-                'set_status': instr >> 8 & 1,
-                'operand': instr >> 13 & 0b1111111111111111111,
+                'Rd': instr[9:13],
+                'immediate': instr[3],
+                'set_status': instr[8],
+                'operand': instr[13:32],
                 'timer': CycleTimer(1)
             }
             '''
@@ -289,6 +290,7 @@ def decode(instr: int):
 
     else:
         print("Invalid type code")
+        return (CycleStatus.DONE, None)
 
     return (CycleStatus.DONE, instruction)    
 
