@@ -125,17 +125,17 @@ def decode(instr: int):
         elif opcode == '1010':
             instruction['execute'] = {
                 'code': 'LGC',
-                'immediate': instr >> 3 & 1,
-                'set_status': instr >> 8 & 1,
-                'Rn': instr >> 9 & 0b1111,
-                'logic': instr >> 17 & 0b11,
-                'operand': instr >> 19 & 0b1111111111111,
+                'immediate': int(instr[3], 2),
+                'set_status': int(instr[8], 2),
+                'Rn': int(instr[9:13], 2),
+                'logic': int(instr[17:19], 2),
+                'operand': instr[19:32],
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {}
             instruction['writeback'] = {
                 'code': 'LGC',
-                'Rd': instr >> 13 & 0b1111,
+                'Rd': int(instr[13:17], 2),
                 'timer': CycleTimer(1)
             }
             '''
@@ -203,14 +203,14 @@ def decode(instr: int):
             instruction['execute'] = {}
             instruction['memory'] = {
                 'code': 'LDR',
-                'immediate': instr >> 3 & 1,
-                'operand': instr >> 11 & 0b1111111111111111,
-                'offset': instr >> 27 & 0b11111,
+                'immediate': int(instr[3], 2),
+                'operand': instr[11:27],
+                'offset': int(instr[27:32], 2),
                 'timer': CycleTimer(1)
             }
             instruction['writeback'] = {
                 'code': 'LDR',
-                'Rd': instr >> 7 & 0b1111,
+                'Rd': int(instr[7:11], 2),
                 'timer': CycleTimer(1)
             }
             '''
@@ -228,10 +228,10 @@ def decode(instr: int):
             instruction['execute'] = {}
             instruction['memory'] = {
                 'code': 'LDR',
-                'Rn': instr >> 7 & 0b1111,
-                'immediate': instr >> 3 & 1,
-                'operand': instr >> 11 & 0b1111111111111111,
-                'offset': instr >> 27 & 0b11111,
+                'Rn': int(instr[7:11], 2),
+                'immediate': int(instr[3], 2),
+                'operand': instr[11:27],
+                'offset': int(instr[27:32], 2),
                 'timer': CycleTimer(1)
             }
             instruction['writeback'] = {}
@@ -255,8 +255,8 @@ def decode(instr: int):
         if opcode == 0b001:
             instruction['execute'] = {
                 'code': 'BX',
-                'addressing': instr >> 6 & 0b11,
-                'operand': instr >> 8 & 0b111111111111111111111111,
+                'addressing': int(instr[6:8], 2),
+                'operand': instr[8:32],
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {}
@@ -271,9 +271,9 @@ def decode(instr: int):
         elif opcode == 0b010:
             instruction['execute'] = {
                 'code': 'BC',
-                'addressing': instr >> 6 & 0b11,
-                'operand1': instr >> 8 & 0b11111,
-                'operand2': instr >> 13 & 0b1111111111111111111,
+                'addressing': int(instr[6:8], 2),
+                'operand1': instr[8:13],
+                'operand2': instr[13:32],
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {}
