@@ -32,6 +32,12 @@ class FetchStage:
             return CycleStatus.WAIT, None'''
             
         if status == CycleStatus.WAIT:
+            if self.instruction[1] is None:
+                self.instruction = core.memory.query(pc.read())
+                if self.instruction[0] != CycleStatus.WAIT:
+                    pc.write(pc.read() + 1)
+                    if self.instruction[1] == 4294967295:
+                        self.ended = True
             return CycleStatus.WAIT, None 
 
         curr_instruction = self.instruction
@@ -70,9 +76,10 @@ class DecodeStage:
             self.fetch.fetch_cycle(CycleStatus.WAIT, pc, core)
             return None
 
-        print(f"passing {self.decoded} to decode")
+        print(f"passing {self.decoded} to decode with status {status}")
 
-        self.decoded = decode(self.decoded[1])
+        if self.decoded[0] != CycleStatus.DONE:
+            self.decoded = decode(self.decoded[1])
 
         if self.decoded[0] == CycleStatus.WAIT or status == CycleStatus.WAIT:
             self.fetch.fetch_cycle(CycleStatus.WAIT, pc, core)

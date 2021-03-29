@@ -168,7 +168,7 @@ def interpret_asm_line(line):
         if operand1 > 11:
             raise Exception(f"Invalid destination register \'{tokens[1]}\'")
         else:
-            operand1 = format(destination, '04b')
+            operand1 = format(operand1, '04b')
 
         if tokens[2][0] == '#':
             value = format(int(tokens[2][1:]), '019b')
