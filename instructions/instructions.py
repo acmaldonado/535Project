@@ -43,7 +43,7 @@ class DecodeClass:
 
             opcode = instr >> 4 & 0b1111
 
-            # MOV
+            # INSTRUCTION: MOV
             if opcode == 0b0000:
                 instruction['execute'] = {}
                 instruction['memory'] = {}
@@ -52,29 +52,31 @@ class DecodeClass:
                     'Rd': instr >> 9 & 0b1111,
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'operand': instr >> 14 & 0b111111111111111111,
+                    'operand': instr >> 13 & 0b1111111111111111111,
                     'timer': CycleTimer(1)
                 }
                 '''
                 code = 'MOV'
                 Rd = instr >> 9 & 0b1111
                 immediate = instr >> 3 & 1
+                    1 - Immediate addressing
+                    0 - Register direct
                 set_status = instr >> 8 & 1
-                operand = instr >> 14 & 0b111111111111111111
+                operand = instr >> 13 & 0b111111111111111111
                 '''
 
-            # CMP
+            # INSTRUCTION: CMP
             if opcode == 0b1001:
                 instruction['execute'] = {
                     'code': 'CMP',
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
+                    'Rn': instr >> 9 & 0b1111,
                     'operand': instr >> 13 & 0b1111111111111111111,
                     'timer': CycleTimer(1)
                 }
                 instruction['memory'] = {
                     'code': 'CMP',
-                    'Rn': instr >> 9 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 instruction['writeback'] = {}
@@ -82,29 +84,27 @@ class DecodeClass:
                 code = 'CMP'
                 Rn = instr >> 9 & 0b1111
                 immediate = instr >> 3 & 1
+                    1 - Immediate addressing
+                    0 - Register direct
                 set_status = instr >> 8 & 1
                 operand = instr >> 13 & 0b1111111111111111111
                 '''
 
-            # SHT
+            # INSTRUCTION: SHT
             if opcode == 0b1000:
                 instruction['execute'] = {
                     'code': 'SHT',
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'Rd': instr >> 13 & 0b1111,
+                    'Rn': instr >> 9 & 0b1111,
+                    'arithmethic': instr >> 17 & 1,
                     'operand': instr >> 18 & 0b11111111111111,
                     'timer': CycleTimer(1)
                 }
-                instruction['memory'] = {
-                    'code': 'SHT',
-                    'Rn': instr >> 9 & 0b1111,
-                    'addressing': instr >> 17 & 1,
-                    'timer': CycleTimer(1)
-                }
+                instruction['memory'] = {}
                 instruction['writeback'] = {
                     'code': 'SHT',
-                    'Rn': instr >> 9 & 0b1111,
+                    'Rd': instr >> 13 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 '''
@@ -112,30 +112,30 @@ class DecodeClass:
                 Rn = instr >> 9 & 0b1111
                 Rd = instr >> 13 & 0b1111
                 immediate = instr >> 3 & 1
+                    1 - Immediate addressing
+                    0 - Register direct
                 set_status = instr >> 8 & 1
-                addressing = instr >> 17 & 1
+                arithmetic = instr >> 17 & 1
+                    0 - Logical shift
+                    1 - Arithmetic shift
                 operand = instr >> 18 & 0b11111111111111
                 '''
             
-            # LGC
+            # INSTRUCTION: LGC
             if opcode == 0b1010:
                 instruction['execute'] = {
                     'code': 'LGC',
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'Rd': instr >> 13 & 0b1111,
-                    'shift': instr >> 17 & 0b11,
+                    'Rn': instr >> 9 & 0b1111,
+                    'logic': instr >> 17 & 0b11,
                     'operand': instr >> 19 & 0b1111111111111,
                     'timer': CycleTimer(1)
                 }
-                instruction['memory'] = {
-                    'code': 'LGC',
-                    'Rn': instr >> 9 & 0b1111,
-                    'timer': CycleTimer(1)
-                }
+                instruction['memory'] = {}
                 instruction['writeback'] = {
                     'code': 'LGC',
-                    'Rn': instr >> 9 & 0b1111,
+                    'Rd': instr >> 13 & 0b1111,
                     'timer': CycleTimer(1)
                 }
                 '''
@@ -143,31 +143,33 @@ class DecodeClass:
                 Rn = instr >> 9 & 0b1111
                 Rd = instr >> 13 & 0b1111
                 immediate = instr >> 3 & 1
+                    1 - Immediate addressing
+                    0 - Register direct
                 set_status = instr >> 8 & 1
-                shift = instr >> 17 & 0b11
+                logic = instr >> 17 & 0b11
+                    00 - NOT
+                    01 - NAND
+                    10 - AND
+                    11 - OR
                 operand = instr >> 19 & 0b1111111111111
                 '''
             
             # Any other opcode format 
             else:
-                # ADD
+                # INSTRUCTION: ADD
                 if opcode == 0b0001:
                     instruction['execute'] = {
                     'code': 'ADD',
                     'immediate': instr >> 3 & 1,
                     'set_status': instr >> 8 & 1,
-                    'Rd': instr >> 13 & 0b1111,
+                    'Rn': instr >> 9 & 0b1111,
                     'operand': instr >> 17 & 0b111111111111111,
                     'timer': CycleTimer(1)
                     }
-                    instruction['memory'] = {
-                        'code': 'ADD',
-                        'Rn': instr >> 9 & 0b1111,
-                        'timer': CycleTimer(1)
-                    }
+                    instruction['memory'] = {}
                     instruction['writeback'] = {
                         'code': 'ADD',
-                        'Rn': instr >> 9 & 0b1111,
+                        'Rd': instr >> 13 & 0b1111,
                         'timer': CycleTimer(1)
                     }
                     '''
@@ -175,6 +177,8 @@ class DecodeClass:
                     Rn = instr >> 9 & 0b1111
                     Rd = instr >> 13 & 0b1111
                     immediate = instr >> 3 & 1
+                        1 - Immediate addressing
+                        0 - Register direct
                     set_status = instr >> 8 & 1
                     operand = instr >> 17 & 0b111111111111111
                     '''
@@ -193,12 +197,11 @@ class DecodeClass:
             
             opcode = instr >> 4 & 0b1111
 
-            # LDR
+            # INSTRUCTION: LDR
             if opcode == 0b000:
                 instruction['execute'] = {}
                 instruction['memory'] = {
                     'code': 'LDR',
-                    'Rd': instr >> 7 & 0b1111,
                     'immediate': instr >> 3 & 1,
                     'operand': instr >> 11 & 0b1111111111111111,
                     'offset': instr >> 27 & 0b11111,
@@ -213,11 +216,13 @@ class DecodeClass:
                 code = 'LDR'
                 Rd = instr >> 7 & 0b1111
                 immediate = instr >> 3 & 1
+                    1 - Immediate addressing
+                    0 - Register direct
                 operand = instr >> 11 & 0b1111111111111111
                 offset = instr >> 27 & 0b11111
                 '''
 
-            # STR
+            # INSTRUCTION: STR
             if opcode == 0b001:
                 instruction['execute'] = {}
                 instruction['memory'] = {
@@ -228,15 +233,13 @@ class DecodeClass:
                     'offset': instr >> 27 & 0b11111,
                     'timer': CycleTimer(1)
                 }
-                instruction['writeback'] = {
-                    'code': 'LDR',
-                    'Rn': instr >> 7 & 0b1111,
-                    'timer': CycleTimer(1)
-                }
+                instruction['writeback'] = {}
                 '''
                 code = 'STR'
                 Rn = instr >> 7 & 0b1111
                 immediate = instr >> 3 & 1
+                    1 - Immediate addressing
+                    0 - Register direct
                 operand = instr >> 11 & 0b1111111111111111
                 offset = instr >> 27 & 0b11111
                 '''
@@ -246,7 +249,25 @@ class DecodeClass:
 
             opcode = instr >> 4 & 0b1111
 
-            # BC
+
+            # INSTRUCTION: BX
+            if opcode == 0b001:
+                instruction['execute'] = {}
+                instruction['memory'] = {
+                    'code': 'BX',
+                    'Rn': instr >> 10 & 0b1111,
+                    'Rd': instr >> 14 & 0b111111111111111111,
+                    'timer': CycleTimer(1)
+                }
+                instruction['writeback'] = {}
+                '''
+                code = 'BX'
+                Rn = instr >> 6 & 0b1111
+                Rd = instr >> 10 & 0b1111
+                operand = instr >> 14 & 0b111111111111111111
+                '''
+
+            # INSTRUCTION: BC
             if opcode == 0b010:
                 instruction['execute'] = {}
                 instruction['memory'] = {
@@ -256,11 +277,7 @@ class DecodeClass:
                     'operand2': instr >> 13 & 0b1111111111111111111,
                     'timer': CycleTimer(1)
                 }
-                instruction['writeback'] = {
-                    'code': 'BC',
-                    'Rn': instr >> 7 & 0b1111,
-                    'timer': CycleTimer(1)
-                }
+                instruction['writeback'] = {}
                 '''
                 code = 'BC'
                 addressing = instr >> 6 & 0b11
@@ -299,27 +316,110 @@ class Execute:
             else:
                 raise Exception("Wrong addressing mode")
 
-            instruction['result'] = GeneralALU.add(instruction, val1, val2)
+            instruction['result'] = CORE.GALU.add(val1, val2)
 
         # CMP
         if instruction['execute']['code'] == 'CMP':
             # value at register 1
             val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
             # If it is immediate
-            if instruction['execute']['immediate'] == 0:
+            if instruction['execute']['immediate'] == 1:
                 val2 = instruction['execute']['operand']
             # If it is register direct
-            if instruction['execute']['immediate'] == 1:
+            if instruction['execute']['immediate'] == 0:
                 val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
 
-            instruction['result'] = GeneralALU.comp(instruction, val1, val2)
+            instruction['result'] = CORE.GALU.comp(val1, val2)
+
+        # SHT
+        if instruction['execute']['code'] == 'SHT':
+            # value at register 1
+            val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
+            # If it is immediate
+            if instruction['execute']['immediate'] == 1:
+                val2 = instruction['execute']['operand']
+            # If it is register direct
+            if instruction['execute']['immediate'] == 0:
+                val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
+            else:
+                raise Exception("Wrong addressing mode")
+            
+            arithmethic = instruction['execute']['arithmethic']
+
+            instruction['result'] = CORE.GALU.sht(arithmethic, val1, val2)
+
+        # LGC
+        if instruction['execute']['code'] == 'LGC':
+            # value at register 1
+            val1 = CORE.GRegisters.read(instruction['execute']['Rn'])
+            # If it is immediate
+            if instruction['execute']['immediate'] == 1:
+                val2 = instruction['execute']['operand']
+            # If it is register direct
+            if instruction['execute']['immediate'] == 0:
+                val2 = CORE.GRegisters.read(instruction['execute']['operand'] >> 27 & 0b1111)
+            else:
+                raise Exception("Wrong addressing mode")
+
+            logic = instruction['execute']['logic']
+
+            instruction['result'] = CORE.GALU.lgc(logic, val1, val2)
             
         return (CycleStatus.DONE, instruction)
 
 class Memory:
-    pass
+    
+    def store(self, instruction: dict, CORE):
+        if instruction == None:
+            return None
+
+        if instruction['memory']['timer'].check_on() == WAIT:
+            return (CycleStatus.WAIT, instruction)
+        
+        if instruction['memory'] == {}:
+            return (CycleStatus.DONE, instruction)
+
+        # STR (write)
+        if instruction['memory']['code'] == 'STR':
+            val = CORE.GRegisters.read(instruction['memory']['Rn'])
+            # If it is immediate
+            if instruction['memory']['immediate'] == 1:
+                address = instruction['memory']['operand']
+            # If it is register direct
+            if instruction['memory']['immediate'] == 0:
+                address = CORE.GRegisters.read(instruction['memory']['operand'] >> 22 & 0b1111)
+            else:
+                raise Exception("Wrong addressing mode")
+
+            # Write
+            CORE.Memory.store(address, val)
+
+    def load(self, instruction: dict, CORE):
+        if instruction == None:
+            return None
+
+        if instruction['memory']['timer'].check_on() == WAIT:
+            return (CycleStatus.WAIT, instruction)
+        
+        if instruction['memory'] == {}:
+            return (CycleStatus.DONE, instruction)
+
+        # LDR (read)
+        if instruction['memory']['code'] == 'STR':
+            # If it is immediate
+            if instruction['memory']['immediate'] == 1:
+                address = instruction['memory']['operand']
+            # If it is register direct
+            if instruction['memory']['immediate'] == 0:
+                address = CORE.GRegisters.read(instruction['memory']['operand'] >> 22 & 0b1111)
+            else:
+                raise Exception("Wrong addressing mode")
+
+            # Read
+            instruction['result'] = CORE.Memory.query(address)
+
 
 class Write_Back:
 
@@ -335,10 +435,10 @@ class Write_Back:
 
         # MOV
         if instruction['writeback']['code'] == 'MOV':
-            if instruction['writeback']['immediate'] == 0:
+            if instruction['writeback']['immediate'] == 1:
                 val = instruction['writeback']['operand']
             # If it is register direct
-            if instruction['writeback']['immediate'] == 1:
+            if instruction['writeback']['immediate'] == 0:
                 val = CORE.GRegisters.read(instruction['writeback']['operand'] >> 27 & 0b1111)
             else:
                 raise Exception("Wrong addressing mode")
@@ -349,15 +449,17 @@ class Write_Back:
         if instruction['writeback']['code'] == 'ADD':
             CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
 
+        # SHT
+        if instruction['writeback']['code'] == 'SHT':
+            CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+
+        # LGC
+        if instruction['writeback']['code'] == 'LGC':
+            CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+
         # LDR
         if instruction['writeback']['code'] == 'LDR':
             CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
-
-        # STR
-        if instruction['writeback']['code'] == 'STR':
-
-        # BC
-        if instruction['writeback']['code'] == 'BC':
 
         return (CycleStatus.DONE, instruction)
 
