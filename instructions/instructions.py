@@ -227,7 +227,7 @@ def decode(instr: int):
         elif opcode == '001':
             instruction['execute'] = {}
             instruction['memory'] = {
-                'code': 'LDR',
+                'code': 'STR',
                 'Rn': int(instr[7:11], 2),
                 'immediate': int(instr[3], 2),
                 'operand': instr[11:27],
