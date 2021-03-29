@@ -35,7 +35,6 @@ def decode(instr: int):
     }
 
     instr = format(instr, '032b')
-    print(instr)
     type_code = instr[0:3]
     
     # Data type_code
@@ -488,7 +487,7 @@ def write_back(instruction: dict, CORE):
             val = instruction['writeback']['operand']
         # If it is register direct
         elif instruction['writeback']['immediate'] == '0':
-            val = CORE.GRegisters.set_and_read(instruction['writeback']['operand'][27:32])
+            val = CORE.GRegisters.set_and_read(int(instruction['writeback']['operand'][27:32], 2))
         else:
             raise Exception("Wrong addressing mode")
 
