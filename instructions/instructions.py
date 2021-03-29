@@ -248,7 +248,7 @@ def decode(instr: int):
     # Branch type_code
     elif type_code == '100':
 
-        opcode = instr[4:7]
+        opcode = instr[3:6]
 
         # INSTRUCTION: BX
         if opcode == '001':
