@@ -301,11 +301,11 @@ def execute(instruction: dict, CORE):
     if instruction is None:
         return (CycleStatus.DONE, None)
 
-    if instruction['execute']['timer'].check_on() == CycleStatus.WAIT:
-        return (CycleStatus.WAIT, instruction)
-
     if instruction['execute'] == {}:
         return (CycleStatus.DONE, instruction)
+
+    if instruction['execute']['timer'].check_on() == CycleStatus.WAIT:
+        return (CycleStatus.WAIT, instruction)
     
     # ADD
     if instruction['execute']['code'] == 'ADD':
@@ -431,11 +431,11 @@ def load_store(instruction: dict, CORE):
     if instruction is None:
         return (CycleStatus.DONE, None)
 
-    if instruction['memory']['timer'].check_on() == CycleStatus.WAIT:
-        return (CycleStatus.WAIT, instruction)
-    
     if instruction['memory'] == {}:
         return (CycleStatus.DONE, instruction)
+
+    if instruction['memory']['timer'].check_on() == CycleStatus.WAIT:
+        return (CycleStatus.WAIT, instruction)
 
     # STR (write)
     if instruction['memory']['code'] == 'STR':
@@ -476,11 +476,11 @@ def write_back(instruction: dict, CORE):
     if instruction is None:
         return (CycleStatus.DONE, None)
 
-    if instruction['writeback']['timer'].check_on() == CycleStatus.WAIT:
-        return (CycleStatus.WAIT, instruction)
-
     if instruction['writeback'] == {}:
         return (CycleStatus.DONE, instruction)
+
+    if instruction['writeback']['timer'].check_on() == CycleStatus.WAIT:
+        return (CycleStatus.WAIT, instruction)
 
     # MOV
     if instruction['writeback']['code'] == 'MOV':
