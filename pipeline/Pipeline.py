@@ -20,6 +20,7 @@ class FetchStage:
 
         ended = format(core.status.read(), '032b')
         if ended[31] == '1':
+            self.ended = True
             return CycleStatus.WAIT, None
 
         '''if self.instruction is None:
