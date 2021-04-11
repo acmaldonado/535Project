@@ -18,7 +18,8 @@ class FetchStage:
         if not self.enabled and not self.fetch_flag:
             return CycleStatus.WAIT, None
 
-        if self.ended:
+        ended = format(core.status.read(), '032b')
+        if ended[31] == '1':
             return CycleStatus.WAIT, None
 
         '''if self.instruction is None:
@@ -36,16 +37,16 @@ class FetchStage:
                 self.instruction = core.memory.query(pc.read())
                 if self.instruction[0] != CycleStatus.WAIT:
                     pc.write(pc.read() + 1)
-                    if self.instruction[1] == 4294967295:
-                        self.ended = True
+                    # if self.instruction[1] == 4294967295:
+                    #     self.ended = True
             return CycleStatus.WAIT, None 
 
         curr_instruction = self.instruction
         self.instruction = core.memory.query(pc.read())
         if self.instruction[0] != CycleStatus.WAIT:
             pc.write(pc.read() + 1)
-            if self.instruction[1] == 4294967295:
-                self.ended = True
+            # if self.instruction[1] == 4294967295:
+            #     self.ended = True
 
         if not self.enabled:
             self.fetch_flag = False
