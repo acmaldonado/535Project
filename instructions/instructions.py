@@ -55,10 +55,10 @@ def decode(instr: int, CORE):
             
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
-                return (CycleStatus.WAIT, instr)
+                return (CycleStatus.WAIT, int(instr , 2))
             if int(instr[3], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
             else:
@@ -92,10 +92,10 @@ def decode(instr: int, CORE):
 
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
-                return (CycleStatus.WAIT, instr)
+                return (CycleStatus.WAIT, int(instr , 2))
             if int(instr[3], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
             else:
@@ -132,12 +132,12 @@ def decode(instr: int, CORE):
 
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
-                return (CycleStatus.WAIT, instr)
+                return (CycleStatus.WAIT, int(instr , 2))
             if CORE.pipeline.check_dependency(int(instr[13:17], 2)):
-                return (CycleStatus.WAIT, instr)
+                return (CycleStatus.WAIT, int(instr , 2))
             if int(instr[3], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
             else:
@@ -179,12 +179,12 @@ def decode(instr: int, CORE):
 
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
-                return (CycleStatus.WAIT, instr)
+                return (CycleStatus.WAIT, int(instr , 2))
             if CORE.pipeline.check_dependency(int(instr[13:17], 2)):
-                return (CycleStatus.WAIT, instr)
+                return (CycleStatus.WAIT, int(instr , 2))
             if int(instr[3], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
             else:
@@ -230,12 +230,12 @@ def decode(instr: int, CORE):
 
                 # If register is in use
                 if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 if CORE.pipeline.check_dependency(int(instr[13:17], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 if int(instr[3], 2) == 0:
                     if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
-                        return (CycleStatus.WAIT, instr)
+                        return (CycleStatus.WAIT, int(instr , 2))
                     else:
                         operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
                 else:
@@ -288,10 +288,10 @@ def decode(instr: int, CORE):
 
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
-                return (CycleStatus.WAIT, instr)
+                return (CycleStatus.WAIT, int(instr , 2))
             if int(instr[3], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[23:27], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[23:27], 2))
             else:
@@ -326,10 +326,10 @@ def decode(instr: int, CORE):
         elif opcode == '001':
 
             if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
-                return (CycleStatus.WAIT, instr)
+                return (CycleStatus.WAIT, int(instr , 2))
             if int(instr[3], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[23:27], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[23:27], 2))
             else:
@@ -365,7 +365,7 @@ def decode(instr: int, CORE):
 
             if int(instr[6:8], 2) == 1:
                 if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
             elif int(instr[6:8], 2) == 2:
@@ -396,7 +396,7 @@ def decode(instr: int, CORE):
 
             if int(instr[6:8], 2) == 1:
                 if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
-                    return (CycleStatus.WAIT, instr)
+                    return (CycleStatus.WAIT, int(instr , 2))
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
             elif int(instr[6:8], 2) == 2:
