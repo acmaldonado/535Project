@@ -38,7 +38,7 @@ def decode(instr: int, CORE):
     instr = format(instr, '032b')
     if instr == '11111111111111111111111111111111':
         instruction['execute'] = {
-            'code': 'END'
+            'code': 'END',
             'timer': CycleTimer(1)
         }
         return (CycleStatus.DONE, instruction)
