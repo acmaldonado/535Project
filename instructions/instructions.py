@@ -22,7 +22,7 @@ Branch: 100
 '''
 
   
-def decode(instr: int):
+def decode(instr: int, CORE):
     if instr is None:
         return CycleStatus.DONE, None
 
@@ -34,7 +34,14 @@ def decode(instr: int):
         'result': None
     }
 
+    # INSTRUCTION: END
     instr = format(instr, '032b')
+    if instr == '11111111111111111111111111111111':
+        instruction['execute'] = {
+            'code': 'END'
+        }
+        return (CycleStatus.DONE, instruction)
+    
     type_code = instr[0:3]
     
     # Data type_code
@@ -44,6 +51,19 @@ def decode(instr: int):
 
         # INSTRUCTION: MOV
         if opcode == '0000':
+            
+            # If register is in use
+            if CORE.check_dependency(int(instr[9:13], 2)):
+                return (CycleStatus.WAIT, instr)
+            if int(instr[3], 2) == 0:
+                if CORE.check_dependency(int(instr[28:32], 2)):
+                    return (CycleStatus.WAIT, instr)
+                else:
+                    operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+            else:
+                operand = instr[13:32]
+
+
             instruction['execute'] = {}
             instruction['memory'] = {}
             instruction['writeback'] = {
@@ -51,9 +71,11 @@ def decode(instr: int):
                 'Rd': int(instr[9:13], 2),
                 'immediate': int(instr[3], 2),
                 'set_status': int(instr[8], 2),
-                'operand': instr[13:32],
+                'operand': operand,
                 'timer': CycleTimer(1)
             }
+            # Add dependencies
+            CORE.add_dependency(int(instr[9:13], 2))
             '''
             code = 'MOV'
             Rd = instr >> 9 & 0b1111
@@ -66,12 +88,24 @@ def decode(instr: int):
 
         # INSTRUCTION: CMP
         elif opcode == '1001':
+
+            # If register is in use
+            if CORE.check_dependency(int(instr[9:13], 2)):
+                return (CycleStatus.WAIT, instr)
+            if int(instr[3], 2) == 0:
+                if CORE.check_dependency(int(instr[28:32], 2)):
+                    return (CycleStatus.WAIT, instr)
+                else:
+                    operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+            else:
+                operand = instr[13:32]
+
             instruction['execute'] = {
                 'code': 'CMP',
                 'immediate': int(instr[3], 2),
                 'set_status': int(instr[8], 2),
-                'Rn': int(instr[9:13], 2),
-                'operand': instr[13:32],
+                'Rn': CORE.GRegisters.set_and_read(int(instr[9:13], 2)),
+                'operand': operand,
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {
@@ -80,6 +114,8 @@ def decode(instr: int):
                 'timer': CycleTimer(1)
             }
             instruction['writeback'] = {}
+            # Add dependencies
+            CORE.add_dependency(CORE.status)
             '''
             code = 'CMP'
             Rn = instr >> 9 & 0b1111
@@ -92,13 +128,27 @@ def decode(instr: int):
 
         # INSTRUCTION: SHT
         elif opcode == '1000':
+
+            # If register is in use
+            if CORE.check_dependency(int(instr[9:13], 2)):
+                return (CycleStatus.WAIT, instr)
+            if CORE.check_dependency(int(instr[13:17], 2)):
+                return (CycleStatus.WAIT, instr)
+            if int(instr[3], 2) == 0:
+                if CORE.check_dependency(int(instr[28:32], 2)):
+                    return (CycleStatus.WAIT, instr)
+                else:
+                    operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+            else:
+                operand = instr[18:32]
+
             instruction['execute'] = {
                 'code': 'SHT',
                 'immediate': int(instr[3], 2),
                 'set_status': int(instr[8], 2),
-                'Rn': int(instr[9:13], 2),
+                'Rn': CORE.GRegisters.set_and_read(int(instr[9:13], 2)),
                 'arithmethic': int(instr[17], 2),
-                'operand': instr[18:32],
+                'operand': operand,
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {}
@@ -107,6 +157,8 @@ def decode(instr: int):
                 'Rd': int(instr[13:17], 2),
                 'timer': CycleTimer(1)
             }
+            # Add dependencies
+            CORE.add_dependency(int(instr[13:17], 2))
             '''
             code = 'SHT'
             Rn = instr >> 9 & 0b1111
@@ -123,13 +175,27 @@ def decode(instr: int):
         
         # INSTRUCTION: LGC
         elif opcode == '1010':
+
+            # If register is in use
+            if CORE.check_dependency(int(instr[9:13], 2)):
+                return (CycleStatus.WAIT, instr)
+            if CORE.check_dependency(int(instr[13:17], 2)):
+                return (CycleStatus.WAIT, instr)
+            if int(instr[3], 2) == 0:
+                if CORE.check_dependency(int(instr[28:32], 2)):
+                    return (CycleStatus.WAIT, instr)
+                else:
+                    operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+            else:
+                operand = instr[19:32]
+
             instruction['execute'] = {
                 'code': 'LGC',
                 'immediate': int(instr[3], 2),
                 'set_status': int(instr[8], 2),
-                'Rn': int(instr[9:13], 2),
+                'Rn': CORE.GRegisters.set_and_read(int(instr[9:13], 2)),
                 'logic': int(instr[17:19], 2),
-                'operand': instr[19:32],
+                'operand': operand,
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {}
@@ -138,6 +204,8 @@ def decode(instr: int):
                 'Rd': int(instr[13:17], 2),
                 'timer': CycleTimer(1)
             }
+            # Add dependencies
+            CORE.add_dependency(int(instr[13:17], 2))
             '''
             code = 'LGC'
             Rn = instr >> 9 & 0b1111
@@ -158,12 +226,26 @@ def decode(instr: int):
         else:
             # INSTRUCTION: ADD
             if opcode == '0001':
+
+                # If register is in use
+                if CORE.check_dependency(int(instr[9:13], 2)):
+                    return (CycleStatus.WAIT, instr)
+                if CORE.check_dependency(int(instr[13:17], 2)):
+                    return (CycleStatus.WAIT, instr)
+                if int(instr[3], 2) == 0:
+                    if CORE.check_dependency(int(instr[28:32], 2)):
+                        return (CycleStatus.WAIT, instr)
+                    else:
+                        operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+                else:
+                    operand = instr[17:32]
+                
                 instruction['execute'] = {
                 'code': 'ADD',
                 'immediate': int(instr[3], 2),
                 'set_status': int(instr[8], 2),
-                'Rn': int(instr[9:13], 2),
-                'operand': instr[17:32],
+                'Rn': CORE.GRegisters.set_and_read(int(instr[9:13], 2)),
+                'operand': operand,
                 'timer': CycleTimer(1)
                 }
                 instruction['memory'] = {}
@@ -172,6 +254,8 @@ def decode(instr: int):
                     'Rd': int(instr[13:17], 2),
                     'timer': CycleTimer(1)
                 }
+                # Add dependencies
+                CORE.add_dependency(int(instr[13:17], 2))
                 '''
                 code = 'ADD'
                 Rn = instr >> 9 & 0b1111
@@ -200,11 +284,23 @@ def decode(instr: int):
 
         # INSTRUCTION: LDR
         if opcode == '000':
+
+            # If register is in use
+            if CORE.check_dependency(int(instr[7:11], 2)):
+                return (CycleStatus.WAIT, instr)
+            if int(instr[3], 2) == 0:
+                if CORE.check_dependency(int(instr[23:27], 2)):
+                    return (CycleStatus.WAIT, instr)
+                else:
+                    operand = CORE.GRegisters.set_and_read(int(instr[23:27], 2))
+            else:
+                operand = instr[11:27]
+
             instruction['execute'] = {}
             instruction['memory'] = {
                 'code': 'LDR',
                 'immediate': int(instr[3], 2),
-                'operand': instr[11:27],
+                'operand': operand,
                 'offset': int(instr[27:32], 2),
                 'timer': CycleTimer(1)
             }
@@ -213,6 +309,8 @@ def decode(instr: int):
                 'Rd': int(instr[7:11], 2),
                 'timer': CycleTimer(1)
             }
+            # Add dependencies
+            CORE.add_dependency(int(instr[7:11], 2))
             '''
             code = 'LDR'
             Rd = instr >> 7 & 0b1111
@@ -225,12 +323,23 @@ def decode(instr: int):
 
         # INSTRUCTION: STR
         elif opcode == '001':
+
+            if CORE.check_dependency(int(instr[7:11], 2)):
+                return (CycleStatus.WAIT, instr)
+            if int(instr[3], 2) == 0:
+                if CORE.check_dependency(int(instr[23:27], 2)):
+                    return (CycleStatus.WAIT, instr)
+                else:
+                    operand = CORE.GRegisters.set_and_read(int(instr[23:27], 2))
+            else:
+                operand = instr[11:27]
+
             instruction['execute'] = {}
             instruction['memory'] = {
                 'code': 'STR',
-                'Rn': int(instr[7:11], 2),
+                'Rn': CORE.GRegisters.set_and_read(int(instr[7:11], 2)),
                 'immediate': int(instr[3], 2),
-                'operand': instr[11:27],
+                'operand': operand,
                 'offset': int(instr[27:32], 2),
                 'timer': CycleTimer(1)
             }
@@ -252,10 +361,21 @@ def decode(instr: int):
 
         # INSTRUCTION: BX
         if opcode == '001':
+
+            if int(instr[6:8], 2) == 1:
+                if CORE.check_dependency(int(instr[28:32], 2)):
+                    return (CycleStatus.WAIT, instr)
+                else:
+                    operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+            elif int(instr[6:8], 2) == 2:
+                print('lol no (register indirect)')
+            else:
+                operand = instr[8:32]
+
             instruction['execute'] = {
                 'code': 'BX',
                 'addressing': int(instr[6:8], 2),
-                'operand': instr[8:32],
+                'operand': operand,
                 'timer': CycleTimer(1)
             }
             instruction['memory'] = {}
@@ -272,6 +392,17 @@ def decode(instr: int):
 
         # INSTRUCTION: BC
         elif opcode == '010':
+
+            if int(instr[6:8], 2) == 1:
+                if CORE.check_dependency(int(instr[28:32], 2)):
+                    return (CycleStatus.WAIT, instr)
+                else:
+                    operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+            elif int(instr[6:8], 2) == 2:
+                print('lol no (register indirect)')
+            else:
+                operand = instr[13:32]
+
             instruction['execute'] = {
                 'code': 'BC',
                 'addressing': instr[6:8],
@@ -281,6 +412,8 @@ def decode(instr: int):
             }
             instruction['memory'] = {}
             instruction['writeback'] = {}
+            # Add dependencies
+            CORE.add_dependency(CORE.status)
             '''
             code = 'BC'
             addressing = instr >> 6 & 0b11
@@ -310,16 +443,28 @@ def execute(instruction: dict, CORE):
     if instruction['execute']['timer'].check_on(3735928559) == CycleStatus.WAIT:
         return (CycleStatus.WAIT, instruction)
     
-    # ADD
+    # EXECUTE: END
+    if instruction['execute']['code'] == 'END':
+        status_reg = CORE.status.read()
+        status_reg = format(status_reg, '032b')
+
+        # Set the status register at index 32 to true
+        status_reg[31] = 1
+
+        status_reg = int(status_reg, 2)
+        CORE.status.write(status_reg)
+        instruction['squashed'] = True
+
+    # EXECUTE: ADD
     if instruction['execute']['code'] == 'ADD':
         # value at register 1
-        val1 = CORE.GRegisters.set_and_read(instruction['execute']['Rn'])
+        val1 = instruction['execute']['Rn']
         # If it is immediate
         if instruction['execute']['immediate'] == 1:
             val2 = int(instruction['execute']['operand'], 2)
         # If it is register direct
         elif instruction['execute']['immediate'] == 0:
-            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand'])-4:], 2))
+            val2 = instruction['execute']['operand']
         else:
             raise Exception("Wrong addressing mode")
 
@@ -328,28 +473,29 @@ def execute(instruction: dict, CORE):
     # CMP
     elif instruction['execute']['code'] == 'CMP':
         # value at register 1
-        val1 = CORE.GRegisters.set_and_read(instruction['execute']['Rn'])
+        val1 = instruction['execute']['Rn']
         # If it is immediate
         if instruction['execute']['immediate'] == 1:
             val2 = int(instruction['execute']['operand'], 2)
         # If it is register direct
         elif instruction['execute']['immediate'] == 0:
-            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand'])-4:], 2))
+            val2 = instruction['execute']['operand']
         else:
             raise Exception("Wrong addressing mode")
 
         instruction['result'] = CORE.GALU.comp(val1, val2)
+        
 
     # SHT
     elif instruction['execute']['code'] == 'SHT':
         # value at register 1
-        val1 = CORE.GRegisters.set_and_read(instruction['execute']['Rn'])
+        val1 = instruction['execute']['Rn']
         # If it is immediate
         if instruction['execute']['immediate'] == 1:
             val2 = int(instruction['execute']['operand'], 2)
         # If it is register direct
         elif instruction['execute']['immediate'] == 0:
-            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand'])-4:], 2))
+            val2 = instruction['execute']['operand']
         else:
             raise Exception("Wrong addressing mode")
         
@@ -360,13 +506,13 @@ def execute(instruction: dict, CORE):
     # LGC
     elif instruction['execute']['code'] == 'LGC':
         # value at register 1
-        val1 = CORE.GRegisters.set_and_read(instruction['execute']['Rn'])
+        val1 = instruction['execute']['Rn']
         # If it is immediate
         if instruction['execute']['immediate'] == 1:
             val2 = int(instruction['execute']['operand'], 2)
         # If it is register direct
         elif instruction['execute']['immediate'] == 0:
-            val2 = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand'])-4:], 2))
+            val2 = instruction['execute']['operand']
         else:
             raise Exception("Wrong addressing mode")
 
@@ -377,16 +523,16 @@ def execute(instruction: dict, CORE):
     # BX
     elif instruction['execute']['code'] == 'BX':
         # If it is immediate
-        if instruction['execute']['addressing'] == 0b00:
+        if instruction['execute']['addressing'] == 0:
             address = int(instruction['execute']['operand'], 2)
         # If it is Register direct
-        elif instruction['execute']['addressing'] == 0b01:
-            address = CORE.GRegisters.set_and_read(int(instruction['execute']['operand'][len(instruction['execute']['operand'])-4:], 2))
+        elif instruction['execute']['addressing'] == 1:
+            address = instruction['execute']['operand']
         # If it is Register indirect
-        elif instruction['execute']['addressing'] == 0b10:
+        elif instruction['execute']['addressing'] == 2:
             print('lol no')
         # If it is PC + immediate
-        elif instruction['execute']['addressing'] == 0b11:
+        elif instruction['execute']['addressing'] == 3:
             address = CORE.pc.read() + int(instruction['execute']['operand'], 2)
         else:
             raise Exception("Wrong addressing mode")
@@ -410,7 +556,7 @@ def execute(instruction: dict, CORE):
             address = int(instruction['execute']['operand2'], 2)
         # If it is Register direct
         elif instruction['execute']['addressing'] == '01':
-            address = CORE.GRegisters.set_and_read(int(instruction['execute']['operand2'][len(instruction['execute']['operand2'])-4:], 2))
+            address = instruction['execute']['operand2']
         # If it is Register indirect
         elif instruction['execute']['addressing'] == '10':
             print('lol no')
@@ -424,6 +570,9 @@ def execute(instruction: dict, CORE):
 
         # Write into Program Counter
         CORE.pc.write(address)
+
+        # Release status register
+        CORE.remove_dependency(CORE.status)
 
     else:
         raise Exception("Invalid instruction")
@@ -443,13 +592,13 @@ def load_store(instruction: dict, CORE):
 
     # STR (write)
     if instruction['memory']['code'] == 'STR':
-        val = CORE.GRegisters.set_and_read(instruction['memory']['Rn'])
+        val = instruction['memory']['Rn']
         # If it is immediate
         if instruction['memory']['immediate'] == 1:
             address = int(instruction['memory']['operand'], 2)
         # If it is register direct
         elif instruction['memory']['immediate'] == 0:
-            address = CORE.GRegisters.set_and_read(int(instruction['memory']['operand'][len(instruction['memory']['operand'])-4:], 2))
+            address = instruction['memory']['operand']
         else:
             raise Exception("Wrong addressing mode")
 
@@ -465,7 +614,7 @@ def load_store(instruction: dict, CORE):
             address = int(instruction['memory']['operand'], 2)
         # If it is register direct
         elif instruction['memory']['immediate'] == 0:
-            address = CORE.GRegisters.set_and_read(int(instruction['memory']['operand'][len(instruction['memory']['operand'])-4:], 2))
+            address = instruction['memory']['operand']
         else:
             raise Exception("Wrong addressing mode")
 
@@ -489,6 +638,10 @@ def load_store(instruction: dict, CORE):
         
         status_reg = int(status_reg, 2)
         result = CORE.status.write(status_reg)
+
+        # Release status register
+        CORE.remove_dependency(CORE.status)
+
         return (result, instruction)
 
     else:
@@ -511,26 +664,36 @@ def write_back(instruction: dict, CORE):
             val = int(instruction['writeback']['operand'], 2)
         # If it is register direct
         elif instruction['writeback']['immediate'] == 0:
-            val = CORE.GRegisters.set_and_read(int(instruction['writeback']['operand'][len(instruction['writeback']['operand'])-4:], 2))
+            val = instruction['writeback']['operand']
         else:
             raise Exception("Wrong addressing mode")
 
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], val)
+        # Remove depencencies
+        CORE.remove_dependency(instruction['writeback']['Rd'])
 
     # ADD
     elif instruction['writeback']['code'] == 'ADD':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        # Remove depencencies
+        CORE.remove_dependency(instruction['writeback']['Rd'])
 
     # SHT
     elif instruction['writeback']['code'] == 'SHT':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        # Remove depencencies
+        CORE.remove_dependency(instruction['writeback']['Rd'])
 
     # LGC
     elif instruction['writeback']['code'] == 'LGC':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        # Remove depencencies
+        CORE.remove_dependency(instruction['writeback']['Rd'])
 
     # LDR
     elif instruction['writeback']['code'] == 'LDR':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        # Remove depencencies
+        CORE.remove_dependency(instruction['writeback']['Rd'])
 
     return (CycleStatus.DONE, instruction)
