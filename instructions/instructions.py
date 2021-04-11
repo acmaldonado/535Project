@@ -39,6 +39,7 @@ def decode(instr: int, CORE):
     if instr == '11111111111111111111111111111111':
         instruction['execute'] = {
             'code': 'END'
+            'timer': CycleTimer(1)
         }
         return (CycleStatus.DONE, instruction)
     
