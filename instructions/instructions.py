@@ -457,7 +457,7 @@ def execute(instruction: dict, CORE):
         instruction['squashed'] = True
 
     # EXECUTE: ADD
-    if instruction['execute']['code'] == 'ADD':
+    elif instruction['execute']['code'] == 'ADD':
         # value at register 1
         val1 = instruction['execute']['Rn']
         # If it is immediate
