@@ -37,6 +37,11 @@ class Core:
         for i in range(num_cycles):
             self.pipeline.run_cycle(self.pc, self)
             self.cycles += 1
+    
+    def run_until_done(self):
+        while format(self.status.read(), '032b')[31] != '1':
+            self.pipeline.run_cycle(self.pc, self)
+            self.cycles += 1
 
     def memory_array(self):
         return [*enumerate([str(x) for x in self.memory.caches]), ('RAM', str(self.memory.main_memory))]
