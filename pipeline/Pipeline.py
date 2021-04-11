@@ -187,6 +187,7 @@ class Pipeline:
         self.estage = ExecuteStage(self.dstage)
         self.mstage = MemoryStage(self.estage)
         self.wstage = WritebackStage(self.mstage, self.fstage)
+        self.dependency_table = []
 
     def run_cycle(self, pc, core):
         self.wstage.writeback_cycle(pc, core, self)
@@ -199,3 +200,16 @@ class Pipeline:
         self.fstage.squash()
         self.dstage.squash()
         self.estage.squash()
+
+    def add_dependency(self, register):
+        if register not in self.dependency_table:
+            self.dependency_table.append(register)
+    
+    def remove_dependency(self, register):
+        if register in self.dependency_table:
+            self.dependency_table.remove(register)
+    
+    def check_dependency(self, register):
+        if register in self.dependency_table:
+            return True
+        return False
