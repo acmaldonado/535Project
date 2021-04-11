@@ -53,10 +53,10 @@ def decode(instr: int, CORE):
         if opcode == '0000':
             
             # If register is in use
-            if CORE.check_dependency(int(instr[9:13], 2)):
+            if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
                 return (CycleStatus.WAIT, instr)
             if int(instr[3], 2) == 0:
-                if CORE.check_dependency(int(instr[28:32], 2)):
+                if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                     return (CycleStatus.WAIT, instr)
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
@@ -75,7 +75,7 @@ def decode(instr: int, CORE):
                 'timer': CycleTimer(1)
             }
             # Add dependencies
-            CORE.add_dependency(int(instr[9:13], 2))
+            CORE.pipeline.add_dependency(int(instr[9:13], 2))
             '''
             code = 'MOV'
             Rd = instr >> 9 & 0b1111
@@ -90,10 +90,10 @@ def decode(instr: int, CORE):
         elif opcode == '1001':
 
             # If register is in use
-            if CORE.check_dependency(int(instr[9:13], 2)):
+            if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
                 return (CycleStatus.WAIT, instr)
             if int(instr[3], 2) == 0:
-                if CORE.check_dependency(int(instr[28:32], 2)):
+                if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                     return (CycleStatus.WAIT, instr)
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
@@ -115,7 +115,7 @@ def decode(instr: int, CORE):
             }
             instruction['writeback'] = {}
             # Add dependencies
-            CORE.add_dependency(CORE.status)
+            CORE.pipeline.add_dependency(CORE.status)
             '''
             code = 'CMP'
             Rn = instr >> 9 & 0b1111
@@ -130,12 +130,12 @@ def decode(instr: int, CORE):
         elif opcode == '1000':
 
             # If register is in use
-            if CORE.check_dependency(int(instr[9:13], 2)):
+            if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
                 return (CycleStatus.WAIT, instr)
-            if CORE.check_dependency(int(instr[13:17], 2)):
+            if CORE.pipeline.check_dependency(int(instr[13:17], 2)):
                 return (CycleStatus.WAIT, instr)
             if int(instr[3], 2) == 0:
-                if CORE.check_dependency(int(instr[28:32], 2)):
+                if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                     return (CycleStatus.WAIT, instr)
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
@@ -158,7 +158,7 @@ def decode(instr: int, CORE):
                 'timer': CycleTimer(1)
             }
             # Add dependencies
-            CORE.add_dependency(int(instr[13:17], 2))
+            CORE.pipeline.add_dependency(int(instr[13:17], 2))
             '''
             code = 'SHT'
             Rn = instr >> 9 & 0b1111
@@ -177,12 +177,12 @@ def decode(instr: int, CORE):
         elif opcode == '1010':
 
             # If register is in use
-            if CORE.check_dependency(int(instr[9:13], 2)):
+            if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
                 return (CycleStatus.WAIT, instr)
-            if CORE.check_dependency(int(instr[13:17], 2)):
+            if CORE.pipeline.check_dependency(int(instr[13:17], 2)):
                 return (CycleStatus.WAIT, instr)
             if int(instr[3], 2) == 0:
-                if CORE.check_dependency(int(instr[28:32], 2)):
+                if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                     return (CycleStatus.WAIT, instr)
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
@@ -205,7 +205,7 @@ def decode(instr: int, CORE):
                 'timer': CycleTimer(1)
             }
             # Add dependencies
-            CORE.add_dependency(int(instr[13:17], 2))
+            CORE.pipeline.add_dependency(int(instr[13:17], 2))
             '''
             code = 'LGC'
             Rn = instr >> 9 & 0b1111
@@ -228,12 +228,12 @@ def decode(instr: int, CORE):
             if opcode == '0001':
 
                 # If register is in use
-                if CORE.check_dependency(int(instr[9:13], 2)):
+                if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
                     return (CycleStatus.WAIT, instr)
-                if CORE.check_dependency(int(instr[13:17], 2)):
+                if CORE.pipeline.check_dependency(int(instr[13:17], 2)):
                     return (CycleStatus.WAIT, instr)
                 if int(instr[3], 2) == 0:
-                    if CORE.check_dependency(int(instr[28:32], 2)):
+                    if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                         return (CycleStatus.WAIT, instr)
                     else:
                         operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
@@ -255,7 +255,7 @@ def decode(instr: int, CORE):
                     'timer': CycleTimer(1)
                 }
                 # Add dependencies
-                CORE.add_dependency(int(instr[13:17], 2))
+                CORE.pipeline.add_dependency(int(instr[13:17], 2))
                 '''
                 code = 'ADD'
                 Rn = instr >> 9 & 0b1111
@@ -286,10 +286,10 @@ def decode(instr: int, CORE):
         if opcode == '000':
 
             # If register is in use
-            if CORE.check_dependency(int(instr[7:11], 2)):
+            if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
                 return (CycleStatus.WAIT, instr)
             if int(instr[3], 2) == 0:
-                if CORE.check_dependency(int(instr[23:27], 2)):
+                if CORE.pipeline.check_dependency(int(instr[23:27], 2)):
                     return (CycleStatus.WAIT, instr)
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[23:27], 2))
@@ -310,7 +310,7 @@ def decode(instr: int, CORE):
                 'timer': CycleTimer(1)
             }
             # Add dependencies
-            CORE.add_dependency(int(instr[7:11], 2))
+            CORE.pipeline.add_dependency(int(instr[7:11], 2))
             '''
             code = 'LDR'
             Rd = instr >> 7 & 0b1111
@@ -324,10 +324,10 @@ def decode(instr: int, CORE):
         # INSTRUCTION: STR
         elif opcode == '001':
 
-            if CORE.check_dependency(int(instr[7:11], 2)):
+            if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
                 return (CycleStatus.WAIT, instr)
             if int(instr[3], 2) == 0:
-                if CORE.check_dependency(int(instr[23:27], 2)):
+                if CORE.pipeline.check_dependency(int(instr[23:27], 2)):
                     return (CycleStatus.WAIT, instr)
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[23:27], 2))
@@ -363,7 +363,7 @@ def decode(instr: int, CORE):
         if opcode == '001':
 
             if int(instr[6:8], 2) == 1:
-                if CORE.check_dependency(int(instr[28:32], 2)):
+                if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                     return (CycleStatus.WAIT, instr)
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
@@ -394,7 +394,7 @@ def decode(instr: int, CORE):
         elif opcode == '010':
 
             if int(instr[6:8], 2) == 1:
-                if CORE.check_dependency(int(instr[28:32], 2)):
+                if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                     return (CycleStatus.WAIT, instr)
                 else:
                     operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
@@ -413,7 +413,7 @@ def decode(instr: int, CORE):
             instruction['memory'] = {}
             instruction['writeback'] = {}
             # Add dependencies
-            CORE.add_dependency(CORE.status)
+            CORE.pipeline.add_dependency(CORE.status)
             '''
             code = 'BC'
             addressing = instr >> 6 & 0b11
@@ -572,7 +572,7 @@ def execute(instruction: dict, CORE):
         CORE.pc.write(address)
 
         # Release status register
-        CORE.remove_dependency(CORE.status)
+        CORE.pipeline.remove_dependency(CORE.status)
 
     else:
         raise Exception("Invalid instruction")
@@ -640,7 +640,7 @@ def load_store(instruction: dict, CORE):
         result = CORE.status.write(status_reg)
 
         # Release status register
-        CORE.remove_dependency(CORE.status)
+        CORE.pipeline.remove_dependency(CORE.status)
 
         return (result, instruction)
 
@@ -670,30 +670,30 @@ def write_back(instruction: dict, CORE):
 
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], val)
         # Remove depencencies
-        CORE.remove_dependency(instruction['writeback']['Rd'])
+        CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
     # ADD
     elif instruction['writeback']['code'] == 'ADD':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
-        CORE.remove_dependency(instruction['writeback']['Rd'])
+        CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
     # SHT
     elif instruction['writeback']['code'] == 'SHT':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
-        CORE.remove_dependency(instruction['writeback']['Rd'])
+        CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
     # LGC
     elif instruction['writeback']['code'] == 'LGC':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
-        CORE.remove_dependency(instruction['writeback']['Rd'])
+        CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
     # LDR
     elif instruction['writeback']['code'] == 'LDR':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
-        CORE.remove_dependency(instruction['writeback']['Rd'])
+        CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
     return (CycleStatus.DONE, instruction)
