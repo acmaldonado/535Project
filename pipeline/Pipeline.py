@@ -80,7 +80,7 @@ class DecodeStage:
         print(f"passing {self.decoded} to decode with status {status}")
 
         if self.decoded[0] != CycleStatus.DONE:
-            self.decoded = decode(self.decoded[1])
+            self.decoded = decode(self.decoded[1], core)
 
         if self.decoded[0] == CycleStatus.WAIT or status == CycleStatus.WAIT:
             self.fetch.fetch_cycle(CycleStatus.WAIT, pc, core)
