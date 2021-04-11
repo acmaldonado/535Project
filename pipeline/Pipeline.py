@@ -10,6 +10,7 @@ class FetchStage:
         self.enabled = True
         self.fetch_flag = True
         self.ended = False
+        #self.squashed = False
     
 
     def fetch_cycle(self, status, pc, core):
@@ -51,6 +52,9 @@ class FetchStage:
 
         if not self.enabled:
             self.fetch_flag = False
+        '''if self.squashed:
+            self.squashed = False
+            return CycleStatus.WAIT, None'''
         return CycleStatus.WAIT, curr_instruction[1]
 
     def toggle_enabled(self):
@@ -62,12 +66,14 @@ class FetchStage:
     def squash(self):
         if instruction is not None:
             instruction = None
+        #self.squashed = True
 
 class DecodeStage:
 
     def __init__(self, fetch):
         self.fetch = fetch
         self.decoded = None
+        #self.squashed = False
 
     def decode_cycle(self, status, pc, core):
         if self.decoded is None:
@@ -89,11 +95,15 @@ class DecodeStage:
         else:
             decoded_to_return = CycleStatus.WAIT, self.decoded[1]
             self.decoded = self.fetch.fetch_cycle(CycleStatus.DONE, pc, core)
+            '''if self.squashed:
+                self.squashed = False
+                return CycleStatus.WAIT, None'''
             return decoded_to_return
     
     def squash(self):
         if self.decoded is not None:
             self.decoded = None
+        #self.squashed = True
         
 
 class ExecuteStage:
@@ -116,6 +126,7 @@ class ExecuteStage:
         self.executed = execute(self.executed[1], core)
 
         if self.executed[0] == CycleStatus.SQUASH:
+            print('SQUASH ------------------- SQUASH')
             pipe.squash()
 
         if self.executed[0] == CycleStatus.WAIT or status == CycleStatus.WAIT:
