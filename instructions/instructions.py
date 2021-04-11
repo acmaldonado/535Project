@@ -450,7 +450,7 @@ def execute(instruction: dict, CORE):
         status_reg = format(status_reg, '032b')
 
         # Set the status register at index 32 to true
-        status_reg[31] = 1
+        status_reg = status_reg[:31] + '1'
 
         status_reg = int(status_reg, 2)
         CORE.status.write(status_reg)
@@ -631,11 +631,11 @@ def load_store(instruction: dict, CORE):
         status_reg = format(status_reg, '032b')
         
         if result == 1:
-            status_reg[1] == '1'
+            status_reg = status_reg[:1] + '1' + status_reg[2:]
         elif result == -1:
-            status_reg[2] == '1'
+            status_reg = status_reg[:2] + '1' + status_reg[3:]
         elif result == 0:
-            status_reg[0] == '1'
+            status_reg = '1' + status_reg[1:]
         
         status_reg = int(status_reg, 2)
         result = CORE.status.write(status_reg)
