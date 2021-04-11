@@ -645,9 +645,15 @@ def load_store(instruction: dict, CORE):
         
         if result == 1:
             status_reg = status_reg[:1] + '1' + status_reg[2:]
+            status_reg = status_reg[:2] + '0' + status_reg[3:]
+            status_reg = '0' + status_reg[1:]
         elif result == -1:
+            status_reg = status_reg[:1] + '0' + status_reg[2:]
             status_reg = status_reg[:2] + '1' + status_reg[3:]
+            status_reg = '0' + status_reg[1:]
         elif result == 0:
+            status_reg = status_reg[:1] + '0' + status_reg[2:]
+            status_reg = status_reg[:2] + '0' + status_reg[3:]
             status_reg = '1' + status_reg[1:]
         
         status_reg = int(status_reg, 2)
