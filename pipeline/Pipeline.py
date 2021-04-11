@@ -64,8 +64,8 @@ class FetchStage:
         self.fetch_flag = True
 
     def squash(self):
-        if instruction is not None:
-            instruction = None
+        if self.instruction[1] is not None:
+            self.instruction = CycleStatus.DONE, None
         #self.squashed = True
 
 class DecodeStage:
@@ -101,8 +101,8 @@ class DecodeStage:
             return decoded_to_return
     
     def squash(self):
-        if self.decoded is not None:
-            self.decoded = None
+        if self.decoded[1] is not None:
+            self.decoded = CycleStatus.DONE, None
         #self.squashed = True
         
 
@@ -211,7 +211,7 @@ class Pipeline:
     def squash(self):
         self.fstage.squash()
         self.dstage.squash()
-        self.estage.squash()
+        #self.estage.squash()
 
     def add_dependency(self, register):
         if register not in self.dependency_table:
