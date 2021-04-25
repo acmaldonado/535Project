@@ -148,6 +148,12 @@ class Core:
                         curr_level = self.memory.caches[level]
                         return_string +=  str(curr_level.memory_array[line_idx]) + '\n'
 
+
+        if cmd == 'run_to_done':
+            return_string += 'Running current program to completion\n'
+            self.run_until_done()
+            return_string += f'Done after {self.cycles} cycles!\n'
+
         if cmd == 'quit':
             exit(0)
         
@@ -156,9 +162,15 @@ class Core:
 if __name__ == '__main__':
     main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
 
-    if len(sys.argv) >= 2:
-        with open(dir_path + '\\' + sys.argv[1], 'r') as f:
-            main_core.memory = jsonpickle.decode(f.read())
+    print(f'Trying to run on {os.name}')
+    if os.name == 'Windows':
+        if len(sys.argv) >= 2:
+            with open(dir_path + '\\' + sys.argv[1], 'r') as f:
+                main_core.memory = jsonpickle.decode(f.read())
+    else:
+        if len(sys.argv) >= 2:
+            with open(dir_path + '/' + sys.argv[1], 'r') as f:
+                main_core.memory = jsonpickle.decode(f.read())
 
     gui = GUI(main_core)
     gui.start()
