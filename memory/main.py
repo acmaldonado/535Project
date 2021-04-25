@@ -7,9 +7,9 @@ import os
 # read, write, show, start, stop
 # Your view command should return the tag, contents, dirty, and valid bit values for a given cache line, and should just return the contents of a block in DRAM if you tell it to view that level
 
-LINE_SIZE = 4
+LINE_SIZE = 8
 ADDRESS_SIZE = 16
-OFFSET_SIZE = 2
+OFFSET_SIZE = int(log(LINE_SIZE, 2))
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class CycleStatus(Enum):
@@ -127,7 +127,7 @@ class CacheBlock():
             return CycleStatus.WAIT, None
 
     def __str__(self):
-        return '\n'.join(f'address: {i:#0{ceil(self.index_bit_count/4)+2}x}, {str(x)}' for i, x in enumerate(self.memory_array))
+        return '\n'.join(f'address: {i:#0{ceil(self.index_bit_count/LINE_SIZE)+2}x}, {str(x)}' for i, x in enumerate(self.memory_array))
 
     def __repr__(self):
         return str(self)
@@ -161,7 +161,7 @@ class RAMBlock():
             return CycleStatus.WAIT
 
     def __str__(self):
-        return '\n'.join(f'address: {i:#0{ceil(self.address_size/4)+2}x}, {str(x)}' for i, x in enumerate(self.memory_array))
+        return '\n'.join(f'address: {i:#0{ceil(self.address_size/LINE_SIZE)+2}x}, {str(x)}' for i, x in enumerate(self.memory_array))
 
     def __repr__(self):
         return str(self)
@@ -195,14 +195,14 @@ class Memory():
             if status == CycleStatus.WAIT:
                 return status, value
             else:
-                return status, value.data[address%4]
+                return status, value.data[address%LINE_SIZE]
         else:
             status, value = self.main_memory.query(address)
             # print(f'Memory query returned:{ret}')
             if status == CycleStatus.WAIT:
                 return status, value
             else:
-                return status, value.data[address%4]
+                return status, value.data[address%LINE_SIZE]
 
     def store(self, address, data):
         if self.cache_enabled:

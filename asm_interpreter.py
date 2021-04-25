@@ -2,12 +2,18 @@ import sys
 import os
 from memory.main import *
 
-dir_path = os.path.dirname(os.path.realpath(__file__)) + '\\assembler'
+if os.name == 'Windows':
+    dir_path = os.path.dirname(os.path.realpath(__file__)) + '\\assembler'
+else:
+    dir_path = os.path.dirname(os.path.realpath(__file__)) + '/assembler'
 
 def interpret_asm_line(line):
     tokens = line.lower().split(' ')
 
     print(tokens)
+
+    if '//' in tokens[0]:
+        return -1
 
     if tokens[0] == 'mov':
         if len(tokens) < 3:
@@ -227,19 +233,32 @@ def interpret_asm_line(line):
         return "unknown command"
 
 def translate_asm_to_bin(asm_file, bin_file):
-    with open(dir_path + '\\' + asm_file, 'r') as asmf:
+    if os.name == 'Windows':
+        path_denom = '\\'
+    else:
+        path_denom = '/'
+
+    with open(dir_path + path_denom + asm_file, 'r') as asmf:
         lines = asmf.readlines()
 
-    with open(dir_path + '\\' + bin_file, 'w') as binf:
+    with open(dir_path + path_denom + bin_file, 'w') as binf:
         count = 0
         for line in lines:
-            binf.write(f'{count} {int(interpret_asm_line(line), 2)}\n')
-            count+=1
+            interpretation = int(interpret_asm_line(line))
+            if interpretation != -1:
+                binf.write(f'{count} {int(str(interpretation), 2)}\n')
+                count+=1
     
 def generate_memory_from_bin(bin_file):
     memory_system = Memory(16, {"layers":2,"sizes":[8,16]})
 
-    with open(dir_path + '\\' + bin_file, 'r') as binf:
+    if os.name == 'Windows':
+        path_denom = '\\'
+    else:
+        path_denom = '/'
+
+
+    with open(dir_path + path_denom + bin_file, 'r') as binf:
         lines = binf.readlines()
     
     for line in lines:
@@ -250,7 +269,7 @@ def generate_memory_from_bin(bin_file):
 
     parsed_bin = bin_file[:len(bin_file)-4] + '.json'
 
-    with open(dir_path + '\\' + parsed_bin, 'w') as pbinf:
+    with open(dir_path + path_denom + parsed_bin, 'w') as pbinf:
         pbinf.write(jsonpickle.encode(memory_system))
 
 def asm_to_memory(asm_file, bin_file):
