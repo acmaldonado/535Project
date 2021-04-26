@@ -269,7 +269,7 @@ def decode(instr: int, CORE):
                 operand = instr >> 17 & 0b111111111111111
                 '''
 
-                # INSTRUCTION: ADD
+            # INSTRUCTION: MUL
             elif opcode == '0111':
 
                 # If register is in use
