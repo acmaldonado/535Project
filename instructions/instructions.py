@@ -644,17 +644,11 @@ def load_store(instruction: dict, CORE):
         status_reg = format(status_reg, '032b')
         
         if result == 1:
-            status_reg = status_reg[:1] + '1' + status_reg[2:]
-            status_reg = status_reg[:2] + '0' + status_reg[3:]
-            status_reg = '0' + status_reg[1:]
+            status_reg = '01010' + status_reg[5:] #0(EQ)1(GT)0(LT)1(GE)0(LE)
         elif result == -1:
-            status_reg = status_reg[:1] + '0' + status_reg[2:]
-            status_reg = status_reg[:2] + '1' + status_reg[3:]
-            status_reg = '0' + status_reg[1:]
+            status_reg = '00101' + status_reg[5:] #0(EQ)0(GT)1(LT)0(GE)1(LE)
         elif result == 0:
-            status_reg = status_reg[:1] + '0' + status_reg[2:]
-            status_reg = status_reg[:2] + '0' + status_reg[3:]
-            status_reg = '1' + status_reg[1:]
+            status_reg = '10011' + status_reg[5:] #1(EQ)0(GT)0(LT)1(GE)1(LE)
         
         status_reg = int(status_reg, 2)
         result = CORE.status.write(status_reg)
