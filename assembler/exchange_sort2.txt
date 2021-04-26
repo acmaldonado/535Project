@@ -1,0 +1,29 @@
+//R0 has array start address
+MOV R0 #30
+//R1 has array length
+MOV R1 #4
+
+MOV R2 #1
+MOV R3 R0
+outer_loop:
+MOV R4 R2
+ADD R4 R4 #1
+MOV R5 R3
+ADD R5 R5 #1
+inner_loop:
+LDR R6 R3
+LDR R7 R5
+CMP R6 R7
+BC #0 GE not_greater
+STR R6 R5
+STR R7 R3
+not_greater:
+ADD R5 R5 #1
+ADD R4 R4 #1
+CMP R4 R1
+BC #0 LE inner_loop
+ADD R2 R2 #1
+ADD R3 R3 #1
+CMP R2 R1
+BC #0 LT outer_loop
+END

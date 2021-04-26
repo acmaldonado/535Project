@@ -1,0 +1,56 @@
+//R0 has start address for the first matrix
+MOV R0 #64
+//R1 has the start address for the second matrix
+MOV R1 #89
+//R2 has the start address for the resulting matrix; NOTE this matrix will be M1D1xM2D2
+MOV R2 #114
+
+//Start i at 0
+MOV R3 #0
+//Start j at 0
+MOV R4 #0
+
+outer_loop:
+//Start k at 0
+MOV R5 #0
+//Start sum at 0
+MOV R6 #0
+inner_loop:
+//Calculating address of M1[i,k]
+MUL R3 R7 #5
+ADD R7 R7 R5
+ADD R7 R7 R0
+
+//Calculating address of M2[k, j]
+MUL R5 R8 #5
+ADD R8 R8 R4
+ADD R8 R8 R1
+
+//Converting addresses to values
+LDR R7 R7
+LDR R8 R8
+//Multiply values at addresses and add to sum
+MUL R7 R7 R8
+ADD R6 R6 R7
+//Increment k by 1 and check if LT to 5, if so keep looping
+ADD R5 R5 #1
+CMP R5 #5
+BC #0 LT inner_loop
+
+//Calculate address of MR[i,j]
+MUL R3 R7 #5
+ADD R7 R7 R4
+ADD R7 R7 R2
+
+//Store sum at address and try to increment j
+STR R6 R7
+ADD R4 R4 #1
+CMP R4 #5
+BC #0 LT outer_loop
+//if j is 5 then set it to zero and try to increment i
+MOV R4 #0
+ADD R3 R3 #1
+CMP R3 #5
+BC #0 LT outer_loop
+//if i is also 5 then done
+END

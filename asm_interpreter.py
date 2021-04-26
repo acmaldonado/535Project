@@ -2,18 +2,59 @@ import sys
 import os
 from memory.main import *
 
+STATUS_SYMB = {
+    'eq': 0,
+    'neq': 1,
+    'gt': 2,
+    'lt': 3,
+    'ge': 4,
+    'le': 5,
+    'ovf': 6,
+    'ze': 7,
+    'sgn': 8,
+    'udf': 9,
+    'nan': 10,
+    'dnm': 11,
+    'inf': 12,
+    'msn': 13,
+    'esn': 14
+}
+
 if os.name == 'Windows':
     dir_path = os.path.dirname(os.path.realpath(__file__)) + '\\assembler'
+    path_denom = '\\'
 else:
     dir_path = os.path.dirname(os.path.realpath(__file__)) + '/assembler'
+    path_denom = '/'
 
-def interpret_asm_line(line):
+def proccess_text_asm(file):
+
+    with open(dir_path + path_denom + file, 'r') as asmf:
+        lines = asmf.readlines()
+
+    tags = {}
+    counter = 0
+
+    new_lines = []
+
+    for line in lines:
+        if '//' in line or line.strip() == '':
+            continue
+        elif ':' in line:
+            tokens = line.split(':')
+            tags[tokens[0]] = counter
+            continue
+        else:
+            new_lines.append(line.rstrip())
+            counter+=1
+    print(new_lines, tags)
+
+    return new_lines, tags
+
+def interpret_asm_line(line, tags):
     tokens = line.lower().split(' ')
 
     print(tokens)
-
-    if '//' in tokens[0]:
-        return -1
 
     if tokens[0] == 'mov':
         if len(tokens) < 3:
@@ -161,6 +202,52 @@ def interpret_asm_line(line):
         command = instr_type + immediate + instr_opcode + signal + operand1 + destination + value
         return command
 
+    elif tokens[0] == 'mul':
+        if len(tokens) < 4:
+            raise Exception(f"Invalid command \'{line}\'")
+        
+        instr_type = '000'
+        instr_opcode = '0111'
+
+        if tokens[1][0] != 'r':
+            raise Exception(f"Invalid operand register \'{tokens[1]}\'")
+        operand1 = int(tokens[1][1:])
+        if operand1 > 11:
+            raise Exception(f"Invalid operand register \'{tokens[1]}\'")
+        else:
+            operand1 = format(operand1, '04b')
+
+        if tokens[2][0] != 'r':
+            raise Exception(f"Invalid destination register \'{tokens[2]}\'")
+        destination = int(tokens[2][1:])
+        if destination > 11:
+            raise Exception(f"Invalid destination register \'{tokens[2]}\'")
+        else:
+            destination = format(destination, '04b')
+
+        if tokens[3][0] == '#':
+            value = format(int(tokens[3][1:]), '015b')
+            immediate = '1'
+            
+        elif tokens[3][0] == 'r':
+            value = int(tokens[3][1:])
+            if value > 11:
+                raise Exception(f"Invalid value register \'{tokens[3]}\'")
+            else:
+                value = format(value, '015b')
+            immediate = '0'
+        else:
+            raise Exception(f"Invalid value \'{tokens[3]}\'")
+
+        signal = '0'
+        if len(tokens) > 4:
+            if tokens[4] == '1' or tokens[4] == 'true':
+                signal = '1'
+
+        command = instr_type + immediate + instr_opcode + signal + operand1 + destination + value
+        return command
+
+
     elif tokens[0] == 'cmp':
         if len(tokens) < 3:
             raise Exception(f"Invalid command \'{line}\'")
@@ -212,16 +299,22 @@ def interpret_asm_line(line):
             raise Exception(f"Invalid addressing mode \'{tokens[1]}\'")
         mode = format(mode, '02b')
 
-        if tokens[2][0] != '#':
+        if tokens[2][0] == '#':
+            status = int(tokens[2][1:])
+        elif tokens[2] in STATUS_SYMB:
+            status = STATUS_SYMB[tokens[2]]
+        else:
             raise Exception(f"Invalid status bit \'{tokens[2]}\'")
-        status = int(tokens[2][1:])
         if status > 31:
             raise Exception(f"Invalid addressing mode \'{tokens[2]}\'")
         status = format(status, '05b')
 
-        if tokens[3][0] != '#' and tokens[3][0] != 'r':
+        if tokens[3][0] == '#' or tokens[3][0] == 'r':
+            address = format(int(tokens[3][1:]), '019b')
+        elif tokens[3] in tags:
+            address = format(int(tags[tokens[3]]), '019b')
+        else:
             raise Exception(f"Invalid address \'{tokens[3]}\'")
-        address = format(int(tokens[3][1:]), '019b')
 
         command = instr_type + instr_opcode + mode + status + address
         return command
@@ -233,20 +326,13 @@ def interpret_asm_line(line):
         return "unknown command"
 
 def translate_asm_to_bin(asm_file, bin_file):
-    if os.name == 'Windows':
-        path_denom = '\\'
-    else:
-        path_denom = '/'
-
-    with open(dir_path + path_denom + asm_file, 'r') as asmf:
-        lines = asmf.readlines()
+    
+    lines, tags = proccess_text_asm(asm_file)
 
     with open(dir_path + path_denom + bin_file, 'w') as binf:
         count = 0
         for line in lines:
-            interpretation = int(interpret_asm_line(line))
-            if interpretation != -1:
-                binf.write(f'{count} {int(str(interpretation), 2)}\n')
+                binf.write(f'{count} {int(interpret_asm_line(line, tags), 2)}\n')
                 count+=1
     
 def generate_memory_from_bin(bin_file):
