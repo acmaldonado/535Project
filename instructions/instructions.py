@@ -268,6 +268,49 @@ def decode(instr: int, CORE):
                 set_status = instr >> 8 & 1
                 operand = instr >> 17 & 0b111111111111111
                 '''
+
+                # INSTRUCTION: ADD
+            elif opcode == '0111':
+
+                # If register is in use
+                if CORE.pipeline.check_dependency(int(instr[9:13], 2)):
+                    return (CycleStatus.WAIT, int(instr , 2))
+                if CORE.pipeline.check_dependency(int(instr[13:17], 2)):
+                    return (CycleStatus.WAIT, int(instr , 2))
+                if int(instr[3], 2) == 0:
+                    if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
+                        return (CycleStatus.WAIT, int(instr , 2))
+                    else:
+                        operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+                else:
+                    operand = instr[17:32]
+                
+                instruction['execute'] = {
+                'code': 'MUL',
+                'immediate': int(instr[3], 2),
+                'set_status': int(instr[8], 2),
+                'Rn': CORE.GRegisters.set_and_read(int(instr[9:13], 2)),
+                'operand': operand,
+                'timer': CycleTimer(1)
+                }
+                instruction['memory'] = {}
+                instruction['writeback'] = {
+                    'code': 'MUL',
+                    'Rd': int(instr[13:17], 2),
+                    'timer': CycleTimer(1)
+                }
+                # Add dependencies
+                CORE.pipeline.add_dependency(int(instr[13:17], 2))
+                '''
+                code = 'MUL'
+                Rn = instr >> 9 & 0b1111
+                Rd = instr >> 13 & 0b1111
+                immediate = instr >> 3 & 1
+                    1 - Immediate addressing
+                    0 - Register direct
+                set_status = instr >> 8 & 1
+                operand = instr >> 17 & 0b111111111111111
+                '''
             
             # TODO: Add more ALU instructions
 
@@ -476,6 +519,21 @@ def execute(instruction: dict, CORE):
             raise Exception("Wrong addressing mode")
 
         instruction['result'] = CORE.GALU.add(val1, val2)
+
+    # EXECUTE: MUL
+    elif instruction['execute']['code'] == 'MUL':
+        # value at register 1
+        val1 = instruction['execute']['Rn']
+        # If it is immediate
+        if instruction['execute']['immediate'] == 1:
+            val2 = int(instruction['execute']['operand'], 2)
+        # If it is register direct
+        elif instruction['execute']['immediate'] == 0:
+            val2 = instruction['execute']['operand']
+        else:
+            raise Exception("Wrong addressing mode")
+
+        instruction['result'] = CORE.GALU.mul(val1, val2)
 
     # CMP
     elif instruction['execute']['code'] == 'CMP':
@@ -691,6 +749,12 @@ def write_back(instruction: dict, CORE):
 
     # ADD
     elif instruction['writeback']['code'] == 'ADD':
+        CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        # Remove depencencies
+        CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
+
+    # MUL
+    elif instruction['writeback']['code'] == 'MUL':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
