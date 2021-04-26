@@ -1,0 +1,46 @@
+//R0 has first address for first matrix
+MOV R0 #64
+//R1 has first address for second matrix
+MOV R1 #89
+//R2 has first address for resulting matrix
+MOV R2 #114
+
+//Start at i = 0
+MOV R3 #0
+//Start at j = 0
+MOV R4 #0
+
+loop:
+//Calculate address for vectors
+MUL R3 R5 #5
+ADD R5 R5 R0
+
+MUL R4 R6 #5
+ADD R6 R6 R1
+
+//Load vectors into vector registers
+LDRV R0 R5 #5
+LDRV R1 R6 #5
+
+//Do multiplication and store result in float register
+VMUL R0 R0 R1
+
+//Store float value into register
+FTOV R0 R2 R4
+
+//Increment j and see if it is LT 5
+ADD R4 R4 #1
+CMP R4 #5
+BC #0 LT loop
+//If j is 5 then set j to zero, store vector to memory and try to increment i
+MOV R4 #0
+
+//Caluclate resulting vector destination address and store it
+MUL R3 R7 #5
+ADD R7 R7 R2
+STRV R2 R7 #5
+
+ADD R3 R3 #1
+CMP R3 #5
+BC #0 LT loop
+END

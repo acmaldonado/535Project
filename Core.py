@@ -29,7 +29,7 @@ class Core:
 
         self.memory = Memory(memsize, caches)
 
-        self.pipeline = Pipeline(self.memory)
+        self.pipeline = Pipeline(self.memory, self)
 
         self.cycles = 0
 
@@ -153,6 +153,12 @@ class Core:
             return_string += 'Running current program to completion\n'
             self.run_until_done()
             return_string += f'Done after {self.cycles} cycles!\n'
+
+        if cmd == 'toggle_cache':
+            return_string += f'Cache now set to {self.memory.toggle_cache()}'
+
+        if cmd == 'toggle_pipeline':
+            return_string += f'Pipeline now set to {self.pipeline.toggle_pipeline()}'
 
         if cmd == 'quit':
             exit(0)

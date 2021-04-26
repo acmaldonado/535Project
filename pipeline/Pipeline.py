@@ -193,12 +193,13 @@ class WritebackStage:
 
 class Pipeline:
 
-    def __init__(self, memory):
+    def __init__(self, memory, core):
         self.fstage = FetchStage(memory)
         self.dstage = DecodeStage(self.fstage)
         self.estage = ExecuteStage(self.dstage)
         self.mstage = MemoryStage(self.estage)
         self.wstage = WritebackStage(self.mstage, self.fstage)
+        self.core = core
         self.dependency_table = []
 
     def run_cycle(self, pc, core):
@@ -207,10 +208,12 @@ class Pipeline:
     def toggle_pipeline(self):
         self.fstage.toggle_enabled()
         self.wstage.toggle_enabled()
+        return self.fstage.enabled
 
     def squash(self):
         self.fstage.squash()
         self.dstage.squash()
+        self.core.memory.squash()
         #self.estage.squash()
 
     def add_dependency(self, register):

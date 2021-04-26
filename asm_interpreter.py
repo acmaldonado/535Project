@@ -319,6 +319,164 @@ def interpret_asm_line(line, tags):
         command = instr_type + instr_opcode + mode + status + address
         return command
 
+    elif tokens[0] == 'ldrv':
+        if len(tokens) < 3:
+            raise Exception(f'Invalid Command \'{line}\'')
+
+        instr_type = '011'
+        instr_opcode = '010'
+
+        if tokens[1][0] != 'r':
+            raise Exception(f'Invalid register address \'{tokens[1]}\'')
+        destination = int(tokens[1][1:])
+        if destination > 11:
+            raise Exception(f"Invalid destination register \'{tokens[1]}\'")
+        else:
+            destination = format(destination, '04b')
+
+        if tokens[2][0] == '#':
+            value = format(int(tokens[2][1:]), '016b')
+            immediate = '1'
+            
+        elif tokens[2][0] == 'r':
+            value = int(tokens[2][1:])
+            if value > 11:
+                raise Exception(f"Invalid value register \'{tokens[2]}\'")
+            else:
+                value = format(value, '016b')
+            immediate = '0'
+        else:
+            raise Exception(f"Invalid value \'{tokens[2]}\'")
+        
+        if len(tokens) > 3:
+            if tokens[3][0] != '#':
+                raise Exception(f'Invalid offset \'{tokens[3]}\'')
+            offset = format(int(tokens[3][1:]), '05b')
+        else:
+            offset = '00000'
+
+        command = instr_type + immediate + instr_opcode + destination + value + offset
+        return command
+
+    elif tokens[0] == 'strv':
+        if len(tokens) < 3:
+            raise Exception(f'Invalid Command \'{line}\'')
+
+        instr_type = '011'
+        instr_opcode = '011'
+
+        if tokens[1][0] != 'r':
+            raise Exception(f'Invalid register address \'{tokens[1]}\'')
+        destination = int(tokens[1][1:])
+        if destination > 11:
+            raise Exception(f"Invalid destination register \'{tokens[1]}\'")
+        else:
+            destination = format(destination, '04b')
+
+        if tokens[2][0] == '#':
+            value = format(int(tokens[2][1:]), '016b')
+            immediate = '1'
+            
+        elif tokens[2][0] == 'r':
+            value = int(tokens[2][1:])
+            if value > 11:
+                raise Exception(f"Invalid value register \'{tokens[2]}\'")
+            else:
+                value = format(value, '016b')
+            immediate = '0'
+        else:
+            raise Exception(f"Invalid value \'{tokens[2]}\'")
+        
+        if len(tokens) > 3:
+            if tokens[3][0] != '#':
+                raise Exception(f'Invalid offset \'{tokens[3]}\'')
+            offset = format(int(tokens[3][1:]), '05b')
+        else:
+            offset = '00000'
+
+        command = instr_type + immediate + instr_opcode + destination + value + offset
+        return command
+
+    elif tokens[0] == 'vmul':
+        if len(tokens) < 4:
+            raise Exception(f"Invalid command \'{line}\'")
+        
+        instr_type = '001'
+        instr_opcode = '100'
+
+        if tokens[1][0] != 'r':
+            raise Exception(f"Invalid operand register \'{tokens[1]}\'")
+        operand1 = int(tokens[1][1:])
+        if operand1 > 11:
+            raise Exception(f"Invalid operand register \'{tokens[1]}\'")
+        else:
+            operand1 = format(operand1, '04b')
+
+        if tokens[2][0] != 'r':
+            raise Exception(f"Invalid destination register \'{tokens[2]}\'")
+        destination = int(tokens[2][1:])
+        if destination > 11:
+            raise Exception(f"Invalid destination register \'{tokens[2]}\'")
+        else:
+            destination = format(destination, '04b')
+
+        if tokens[3][0] == '#':
+            value = format(int(tokens[3][1:]), '017b')
+            immediate = '1'
+            
+        elif tokens[3][0] == 'r':
+            value = int(tokens[3][1:])
+            if value > 11:
+                raise Exception(f"Invalid value register \'{tokens[3]}\'")
+            else:
+                value = format(value, '017b')
+            immediate = '0'
+        else:
+            raise Exception(f"Invalid value \'{tokens[3]}\'")
+
+        command = instr_type + immediate + instr_opcode + operand1 + destination + value
+        return command
+
+    elif tokens[0] == 'ftov':
+        if len(tokens) < 4:
+            raise Exception(f"Invalid command \'{line}\'")
+
+        instr_type = '101'
+        instr_opcode = '00'
+
+        if tokens[1][0] != 'r':
+            raise Exception(f"Invalid operand register \'{tokens[1]}\'")
+        operand1 = int(tokens[1][1:])
+        if operand1 > 3:
+            raise Exception(f"Invalid operand register \'{tokens[1]}\'")
+        else:
+            operand1 = format(operand1, '02b')
+
+        if tokens[2][0] != 'r':
+            raise Exception(f"Invalid destination register \'{tokens[2]}\'")
+        destination = int(tokens[2][1:])
+        if destination > 11:
+            raise Exception(f"Invalid destination register \'{tokens[2]}\'")
+        else:
+            destination = format(destination, '04b')
+
+        if tokens[3][0] == '#':
+            value = format(int(tokens[3][1:]), '016b')
+            immediate = '1'
+        elif tokens[3][0] == 'r':
+            value = int(tokens[3][1:])
+            if value > 11:
+                raise Exception(f"Invalid destination register \'{tokens[3]}\'")
+            value = format(value, '016b')
+            immediate = '0'
+        else:
+            raise Exception(f"Invalid value \'{tokens[3]}\'")
+
+        command = instr_type + immediate + instr_opcode + operand1 + destination + value + '0000'
+        return command
+        
+
+
     elif tokens[0] == 'end':
         return '11111111111111111111111111111111'
 
