@@ -362,9 +362,29 @@ def asm_to_memory(asm_file, bin_file):
     translate_asm_to_bin(asm_file, bin_file)
     generate_memory_from_bin(bin_file)
     
+def load_memory_with_array(memfile, arrayfile, startaddress):
+    with open(dir_path + path_denom + memfile, 'r') as memf:
+        memory = jsonpickle.decode(memf.read())
+
+    counter = startaddress
+
+    with open(dir_path + path_denom + arrayfile, 'r') as arrayf:
+        lines = arrayf.readlines()
+
+    for line in lines:
+        result = None
+        while result != CycleStatus.DONE:
+            result = memory.store(counter, int(line))
+        counter += 1
+
+    with open(dir_path + path_denom + memfile, 'w') as memf:
+        memf.write(jsonpickle.encode(memory))
 
 if __name__ == '__main__':
-    asm_to_memory(sys.argv[1], sys.argv[2])
+    if sys.argv[1] == 'int':
+        asm_to_memory(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == 'arr':
+        load_memory_with_array(sys.argv[2], sys.argv[3], int(sys.argv[4]))
 
 
         
