@@ -161,7 +161,7 @@ class GUI:
 
     def update_cycle_count(self, cycles_label):
         cycles_label['text'] = f'Cycle count: {self.core.cycles}'
-        self.root.after(500, self.update_cycle_count, self.cycles_label)
+        #self.root.after(500, self.update_cycle_count, self.cycles_label)
 
     def run_cycles(self, cycles_label, cycles_field):
         self.core.run_cycles(int(cycles_field.get()))
@@ -172,9 +172,9 @@ class GUI:
         while format(self.core.status.read(), '032b')[31] != '1':
             self.core.pipeline.run_cycle(self.core.pc, self.core)
             self.core.cycles += 1
-            self.update_cycle_count(cycles_label)
-            self.dia_tab.update()
             # time.sleep(1)
+        self.update_cycle_count(cycles_label)
+        self.dia_tab.update()
 
     def update_pipeline_label(self, pip_label):
         p = self.core.pipeline

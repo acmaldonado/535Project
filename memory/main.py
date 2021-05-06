@@ -59,6 +59,7 @@ class CacheLine():
             self.data = [0] * LINE_SIZE
 
         def __str__(self):
+            #print(f'data: {self.data}, type: {type(self.data)}, length: {len(self.data)}')
             return f'tag={self.tag}:\t{" ".join("{0:#010x}".format(x) for x in self.data)}, valid={1 if self.valid else 0}'
 
         def __repr__(self):
@@ -128,7 +129,7 @@ class CacheBlock():
             return CycleStatus.WAIT, None
 
     def squash(self):
-        print('timer reset!')
+        #print('timer reset!')
         self.timer.reset()
         self.lower_cache.squash()
 
