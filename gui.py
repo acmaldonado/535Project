@@ -95,7 +95,7 @@ class GUI:
         self.cycles_label = tk.Label(self.dia_tab, font=self.FONT)
         self.cycles_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
 
-        # self.update_cycle_count(self.cycles_label)
+        self.update_cycle_count(self.cycles_label)
 
         self.cycles_prompt_label = tk.Label(self.dia_tab, text='How many cycles to run:', font=self.FONT)
         self.cycles_prompt_label.place(rely=.05, relx=0, relheight=.05, relwidth=1)
@@ -107,27 +107,15 @@ class GUI:
         self.run_comp = tk.Button(self.dia_tab, text='Run to completion', font=self.FONT, command=lambda: self.run_until_done(self.cycles_label))
         self.run_comp.place(rely=.85, relx=.33, relheight=.05, relwidth=.33)
 
-        self.root.after(500, self.update_cycle_count, self.cycles_label)
+        # self.root.after(500, self.update_cycle_count, self.cycles_label)
 
         # PIPELINE TAB
         self.pip_tab = tk.Frame(self.tabs)
 
-        self.cycles_label = tk.Label(self.pip_tab, font=self.FONT)
-        self.cycles_label.place(rely=0, relx=0, relheight=1, relwidth=1)
-        # self.cycles_label
-        # self.dia_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
+        self.pip_label = tk.Label(self.pip_tab, font=self.FONT, justify=tk.LEFT)
+        self.pip_label.place(rely=0, relx=0, relheight=1, relwidth=1)
 
-        # self.cycles_label = tk.Label(self.dia_tab, font=self.FONT)
-        # self.cycles_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
-
-        # self.update_cycle_count(self.cycles_label)
-
-        # self.cycles_prompt_label = tk.Label(self.dia_tab, text='How many cycles to run:', font=self.FONT)
-        # self.cycles_prompt_label.place(rely=.05, relx=0, relheight=.05, relwidth=1)
-
-        # self.cycles_field = tk.Entry(self.dia_tab, font=self.FONT)
-        # self.cycles_field.place(rely=.1, relx=0, relwidth=1, relheight=.05)
-        # self.cycles_field.bind('<Return>', lambda event: self.run_cycles(self.cycles_label, self.cycles_field))
+        self.pip_tab.after(500, self.update_pipeline_label, self.pip_label)
 
         # TAB CONTROL
         self.tabs.add(self.cmd_tab, text='Command Line')
@@ -177,12 +165,35 @@ class GUI:
 
     def run_cycles(self, cycles_label, cycles_field):
         self.core.run_cycles(int(cycles_field.get()))
-        # self.update_cycle_count(cycles_label)
+        self.update_cycle_count(cycles_label)
+        self.dia_tab.update()
 
     def run_until_done(self, cycles_label):
         while format(self.core.status.read(), '032b')[31] != '1':
             self.core.pipeline.run_cycle(self.core.pc, self.core)
             self.core.cycles += 1
-            # self.update_cycle_count(cycles_label)
+            self.update_cycle_count(cycles_label)
             self.dia_tab.update()
             # time.sleep(1)
+
+    def update_pipeline_label(self, pip_label):
+        p = self.core.pipeline
+        f = p.fstage.instruction
+        d = p.dstage.decoded
+        e = p.estage.executed
+        m = p.mstage.memorized
+        w = p.wstage.written
+
+        f = '' if (f is None or f[1] is None) else f[1]
+        d = '' if (d is None or d[1] is None) else d[1]
+        e = '' if (e is None or e[1] is None) else e[1]['execute']
+        m = '' if (m is None or m[1] is None) else m[1]['execute']
+        w = '' if (w is None or w[1] is None) else w[1]['execute']
+
+        e = '' if ('code' in e) else e['code']
+        m = '' if ('code' in m) else m['code']
+        w = '' if ('code' in w) else w['code']
+
+        pip_label['text'] = f'Write Back:\t{w}\nMemory:\t\t{m}\nExecute:\t{e}\nDecode:\t\t{d}\nFetch:\t\t{f}'
+        self.pip_tab.update()
+        self.pip_tab.after(500, self.update_pipeline_label, pip_label)

@@ -239,7 +239,7 @@ class Pipeline:
         self.dstage.squash()
         self.core.memory.squash()
         self.fstage.raise_fetch_flag()
-        print('SQUASH WAS CALLED')
+        # print('SQUASH WAS CALLED')
         #self.estage.squash()
 
     def add_dependency(self, register):
