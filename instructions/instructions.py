@@ -711,6 +711,8 @@ def execute(instruction: dict, CORE):
 
     # EXECUTE: VMUL
     elif instruction['execute']['code'] == 'VMUL':
+        print(f'Running Vector multiply: {instruction}')
+
         # value at register 1
         val1 = instruction['execute']['Rn']
         # If it is immediate
@@ -919,14 +921,13 @@ def load_store(instruction: dict, CORE):
 
     # LDRV (read vector)
     elif instruction['memory']['code'] == 'LDRV':
-        address = instruction['memory']['operand'] + [instruction["memory"]["index"]
+        address = instruction['memory']['operand'] + instruction["memory"]["index"]
 
         # Read
         if instruction['memory']['index'] < instruction['memory']['counter']:
             results = CORE.memory.query(address)
             if results[0] == CycleStatus.DONE:
                 instruction['memory']['vector'][instruction['memory']['index']] = results[1]
-                print(f'Loading: {instruction["memory"]["vector"][instruction["memory"]["index"]]}')
                 instruction['memory']['index'] += 1
                 return (CycleStatus.WAIT, instruction)
             else:
