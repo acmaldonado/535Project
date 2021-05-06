@@ -366,7 +366,7 @@ def decode(instr: int, CORE):
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
-            if int(instr[3], 2) == 0:
+            if int(instr[6], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[23:27], 2)):
                     return (CycleStatus.WAIT, int(instr , 2))
                 else:
@@ -377,7 +377,7 @@ def decode(instr: int, CORE):
             instruction['execute'] = {}
             instruction['memory'] = {
                 'code': 'LDR',
-                'immediate': int(instr[3], 2),
+                'immediate': int(instr[6], 2),
                 'operand': operand,
                 'offset': int(instr[27:32], 2),
                 'timer': CycleTimer(1)
@@ -433,7 +433,7 @@ def decode(instr: int, CORE):
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[7:9], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
-            if int(instr[3], 2) == 0:
+            if int(instr[6], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[23:25], 2)):
                     return (CycleStatus.WAIT, int(instr , 2))
                 else:
@@ -444,7 +444,7 @@ def decode(instr: int, CORE):
             instruction['execute'] = {}
             instruction['memory'] = {
                 'code': 'LDRF',
-                'immediate': int(instr[3], 2),
+                'immediate': int(instr[6], 2),
                 'operand': operand,
                 'offset': int(instr[25:32], 2),
                 'timer': CycleTimer(1)
@@ -462,7 +462,7 @@ def decode(instr: int, CORE):
 
             if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
-            if int(instr[3], 2) == 0:
+            if int(instr[6], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[23:27], 2)):
                     return (CycleStatus.WAIT, int(instr , 2))
                 else:
@@ -474,7 +474,7 @@ def decode(instr: int, CORE):
             instruction['memory'] = {
                 'code': 'STR',
                 'Rn': CORE.GRegisters.set_and_read(int(instr[7:11], 2)),
-                'immediate': int(instr[3], 2),
+                'immediate': int(instr[6], 2),
                 'operand': operand,
                 'offset': int(instr[27:32], 2),
                 'timer': CycleTimer(1)
@@ -518,7 +518,7 @@ def decode(instr: int, CORE):
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[7:9], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
-            if int(instr[3], 2) == 0:
+            if int(instr[6], 2) == 0:
                 if CORE.pipeline.check_dependency(int(instr[23:25], 2)):
                     return (CycleStatus.WAIT, int(instr , 2))
                 else:
@@ -530,7 +530,7 @@ def decode(instr: int, CORE):
             instruction['memory'] = {
                 'code': 'STR',
                 'Rn': CORE.FRegisters.set_and_read(int(instr[7:9], 2)),
-                'immediate': int(instr[3], 2),
+                'immediate': int(instr[6], 2),
                 'operand': operand,
                 'offset': int(instr[25:32], 2),
                 'timer': CycleTimer(1)
