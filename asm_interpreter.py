@@ -351,11 +351,11 @@ def interpret_asm_line(line, tags):
         if len(tokens) > 3:
             if tokens[3][0] != '#':
                 raise Exception(f'Invalid offset \'{tokens[3]}\'')
-            offset = format(int(tokens[3][1:]), '05b')
+            offset = format(int(tokens[3][1:]), '06b')
         else:
-            offset = '00000'
+            offset = '000000'
 
-        command = instr_type + immediate + instr_opcode + destination + value + offset
+        command = instr_type + instr_opcode + destination + value + offset
         return command
 
     elif tokens[0] == 'strv':
