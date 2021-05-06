@@ -613,21 +613,33 @@ def decode(instr: int, CORE):
         # INSTRUCTION: FTOV
         if opcode == '00': 
 
-            if CORE.pipeline.check_dependency(int(instr[5:7], 2)):
+            if CORE.pipeline.check_dependency(int(instr[6:8], 2)):
                 return (CycleStatus.WAIT, int(instr, 2))
-            if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
+            if CORE.pipeline.check_dependency(int(instr[8:12], 2)):
                 return (CycleStatus.WAIT, int(instr, 2))
+            if CORE.pipeline.check_dependency(int(instr[24:28], 2)):
+                return (CycleStatus.WAIT, int(instr, 2))
+
+            if int(instr[3], 2) == 0:
+                if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
+                    return (CycleStatus.WAIT, int(instr , 2))
+                else:
+                    offset = CORE.GRegisters.set_and_read(int(instr[24:28], 2))
+            else:
+                offset = instr[20:28]
 
             instruction['execute'] = {}
             instruction['memory'] = {}
             instruction['writeback'] = {
                 'code': 'FTOV',
-                'Rn': CORE.FRegisters.set_and_read(int(instr[5:7], 2)),
-                'Rd': int(instr[7:11], 2),
+                'immediate': int(instr[3], 2),
+                'Rn': CORE.FRegisters.set_and_read(int(instr[6:8], 2)),
+                'Rd': int(instr[8:12], 2),
+                'offset': offset,
                 'timer': CycleTimer(1)
             }
             # Add dependencies
-            CORE.pipeline.add_dependency(int(instr[7:11], 2))
+            CORE.pipeline.add_dependency(int(instr[8:12], 2))
 
     else:
         print("Invalid type code")
