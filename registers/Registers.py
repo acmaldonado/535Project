@@ -72,7 +72,7 @@ class VectorRegister(Register):
 
     def write(self, data: list) -> None:
         for i in range(len(data)):
-            self.data[i] = data[i]
+            self.data[i].write(data[i])
 
     def read(self) -> list:
         vals = []
