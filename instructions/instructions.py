@@ -358,7 +358,7 @@ def decode(instr: int, CORE):
     # Load/Store type_code
     elif type_code == '011':
         
-        opcode = instr[4:7]
+        opcode = instr[3:6]
 
         # INSTRUCTION: LDR
         if opcode == '000':
@@ -399,6 +399,34 @@ def decode(instr: int, CORE):
             offset = instr >> 27 & 0b11111
             '''
 
+        # INSTRUCTION: LDRV
+        elif opcode == '010':
+
+            # If register is in use
+            if CORE.pipeline.check_dependency(int(instr[6:10], 2)):
+                return (CycleStatus.WAIT, int(instr , 2))
+            if CORE.pipeline.check_dependency(int(instr[22:26], 2)):
+                return (CycleStatus.WAIT, int(instr , 2))
+            else:
+                operand = CORE.GRegisters.set_and_read(int(instr[22:26], 2))
+
+            instruction['execute'] = {}
+            instruction['memory'] = {
+                'code': 'LDRV',
+                'operand': operand,
+                'vector': [0] * 64,
+                'index': 0,
+                'counter': int(instr[26:32], 2),
+                'timer': CycleTimer(1)
+            }
+            instruction['writeback'] = {
+                'code': 'LDRV',
+                'Rd': int(instr[6:10], 2),
+                'timer': CycleTimer(1)
+            }
+            # Add dependencies
+            CORE.pipeline.add_dependency(int(instr[6:10], 2))
+
         # INSTRUCTION: LDRF
         elif opcode == '100':
 
@@ -428,34 +456,6 @@ def decode(instr: int, CORE):
             }
             # Add dependencies
             CORE.pipeline.add_dependency(int(instr[7:9], 2))
-
-        # INSTRUCTION: LDRV
-        elif instr[3:6] == '010':
-
-            # If register is in use
-            if CORE.pipeline.check_dependency(int(instr[6:10], 2)):
-                return (CycleStatus.WAIT, int(instr , 2))
-            if CORE.pipeline.check_dependency(int(instr[22:26], 2)):
-                return (CycleStatus.WAIT, int(instr , 2))
-            else:
-                operand = CORE.GRegisters.set_and_read(int(instr[22:26], 2))
-
-            instruction['execute'] = {}
-            instruction['memory'] = {
-                'code': 'LDRV',
-                'operand': operand,
-                'vector': [0] * 64,
-                'index': 0,
-                'counter': int(instr[26:32], 2),
-                'timer': CycleTimer(1)
-            }
-            instruction['writeback'] = {
-                'code': 'LDRV',
-                'Rd': int(instr[6:10], 2),
-                'timer': CycleTimer(1)
-            }
-            # Add dependencies
-            CORE.pipeline.add_dependency(int(instr[6:10], 2))
 
         # INSTRUCTION: STR
         elif opcode == '001':
@@ -490,6 +490,28 @@ def decode(instr: int, CORE):
             offset = instr >> 27 & 0b11111
             '''
 
+        # INSTRUCTION: STRV
+        elif opcode == '011':
+
+            # If register is in use
+            if CORE.pipeline.check_dependency(int(instr[6:10], 2)):
+                return (CycleStatus.WAIT, int(instr , 2))
+            if CORE.pipeline.check_dependency(int(instr[22:26], 2)):
+                return (CycleStatus.WAIT, int(instr , 2))
+            else:
+                operand = CORE.GRegisters.set_and_read(int(instr[22:26], 2))
+
+            instruction['execute'] = {}
+            instruction['memory'] = {
+                'code': 'STRV',
+                'Rn': CORE.VRegisters.set_and_read(int(instr[6:10], 2)),
+                'operand': operand,
+                'index': 0,
+                'offset': int(instr[26:32], 2),
+                'timer': CycleTimer(1)
+            }
+            instruction['writeback'] = {}
+
         # INSTRUCTION: STRF
         elif opcode == '101':
 
@@ -511,28 +533,6 @@ def decode(instr: int, CORE):
                 'immediate': int(instr[3], 2),
                 'operand': operand,
                 'offset': int(instr[25:32], 2),
-                'timer': CycleTimer(1)
-            }
-            instruction['writeback'] = {}
-
-        # INSTRUCTION: STRV
-        elif instr[3:6] == '011':
-
-            # If register is in use
-            if CORE.pipeline.check_dependency(int(instr[6:10], 2)):
-                return (CycleStatus.WAIT, int(instr , 2))
-            if CORE.pipeline.check_dependency(int(instr[22:26], 2)):
-                return (CycleStatus.WAIT, int(instr , 2))
-            else:
-                operand = CORE.GRegisters.set_and_read(int(instr[22:26], 2))
-
-            instruction['execute'] = {}
-            instruction['memory'] = {
-                'code': 'STRV',
-                'Rn': CORE.VRegisters.set_and_read(int(instr[6:10], 2)),
-                'operand': operand,
-                'index': 0,
-                'offset': int(instr[26:32], 2),
                 'timer': CycleTimer(1)
             }
             instruction['writeback'] = {}
@@ -711,7 +711,6 @@ def execute(instruction: dict, CORE):
 
     # EXECUTE: VMUL
     elif instruction['execute']['code'] == 'VMUL':
-        print(f'VECTOR MULTIPLY RAN {instruction}')
 
         # value at register 1
         val1 = instruction['execute']['Rn']
@@ -855,7 +854,6 @@ def load_store(instruction: dict, CORE):
 
     # STR (write)
     if instruction['memory']['code'] == 'STR':
-        print(f'')
         val = instruction['memory']['Rn']
         # If it is immediate
         if instruction['memory']['immediate'] == 1:
@@ -872,7 +870,6 @@ def load_store(instruction: dict, CORE):
 
     # STRV (write vector)
     elif instruction['memory']['code'] == 'STRV':
-        print(f'VECTOR STORE RAN {instruction}')
         if instruction['memory']['offset'] == 0:
             counter = 64
         else:
@@ -924,7 +921,6 @@ def load_store(instruction: dict, CORE):
 
     # LDRV (read vector)
     elif instruction['memory']['code'] == 'LDRV':
-        print(f'VECTOR LOAD RAN {instruction}')
         address = instruction['memory']['operand'] + instruction["memory"]["index"]
 
         # Read
