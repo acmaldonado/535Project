@@ -56,6 +56,7 @@ class FloatRegister(Register):
         return self.data
 
     def hex(self) -> str:
+        print(f'data: {self.data}, type: {type(self.data)}')
         return hex(struct.unpack('<I', struct.pack('<f', self.data))[0])
 
     def __str__(self):
