@@ -358,7 +358,7 @@ def decode(instr: int, CORE):
     # Load/Store type_code
     elif type_code == '011':
         
-        opcode = instr[4:7]
+        opcode = instr[3:6]
 
         # INSTRUCTION: LDR
         if opcode == '000':
