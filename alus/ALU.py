@@ -101,7 +101,7 @@ class VectorALU:
     def convert_binv_to_fltv(self, val: list):
         fval = []
         for v in val:
-            fval.append(bin_to_float(v))
+            fval.append(bin_to_float(format(v, '032b')))
         return fval
 
     def vadd(self, val1: list, val2: list) -> list:
@@ -133,4 +133,4 @@ class VectorALU:
         for i in range(fval1):
             rval.append(float_to_bin(fval1[i] * fval2[i]))
         fval = sum(rval)
-        return fval
+        return float_to_bin(fval)
