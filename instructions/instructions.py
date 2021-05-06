@@ -917,9 +917,9 @@ def load_store(instruction: dict, CORE):
 
         # Read
         if instruction['memory']['index'] <= instruction['memory']['counter']:
-            value = CORE.memory.query(address)
+            results = CORE.memory.query(address)
             if results[0] == CycleStatus.DONE:
-                instruction['memory']['vector'][instruction['memory']['index']] = value
+                instruction['memory']['vector'][instruction['memory']['index']] = results[1]
                 instruction['memory']['index'] += 1
                 return (CycleStatus.WAIT, instruction)
         else:
