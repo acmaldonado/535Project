@@ -1010,7 +1010,7 @@ def write_back(instruction: dict, CORE):
 
     # VMUL
     elif instruction['writeback']['code'] == 'VMUL':
-        CORE.VRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        CORE.FRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
