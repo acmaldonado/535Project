@@ -316,7 +316,40 @@ def decode(instr: int, CORE):
 
     # Vector type_code    
     elif type_code == '001':  
-        pass
+        
+        opcode = instr[4:7]
+
+        # INSTRUCTION: VMUL
+        if opcode == '100':
+
+            # If register is in use
+            if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
+                return (CycleStatus.WAIT, int(instr , 2))
+            if CORE.pipeline.check_dependency(int(instr[11:15], 2)):
+                return (CycleStatus.WAIT, int(instr , 2))
+            if int(instr[3], 2) == 0:
+                if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
+                    return (CycleStatus.WAIT, int(instr , 2))
+                else:
+                    operand = CORE.VRegisters.set_and_read(int(instr[28:32], 2))
+            else:
+                operand = instr[15:32]
+
+            instruction['execute'] = {
+                'code': 'VMUL',
+                'immediate': int(instr[3], 2),
+                'Rn': CORE.VRegisters.set_and_read(int(instr[7:11], 2)),
+                'operand': operand,
+                'timer': CycleTimer(1)
+            }
+            instruction['memory'] = {}
+            instruction['writeback'] = {
+                'code': 'VMUL',
+                'Rd': int(instr[11:15], 2),
+                'timer': CycleTimer(1)
+            }
+            # Add dependencies
+            CORE.pipeline.add_dependency(int(instr[11:15], 2))
 
     # Float type_code    
     elif type_code == '010':
@@ -572,6 +605,33 @@ def decode(instr: int, CORE):
             operand2 = instr >> 13 & 0b1111111111111111111
             '''
 
+    # Register Transfer
+    elif type_code == '101':
+
+        opcode = instr[3:5]
+
+        # INSTRUCTION: FTOV
+        if opcode == '00': 
+
+            if CORE.pipeline.check_dependency(int(instr[5:7], 2)):
+                return (CycleStatus.WAIT, int(instr, 2))
+            if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
+                return (CycleStatus.WAIT, int(instr, 2))
+
+            instruction['execute'] = {
+                'code': 'FTOV',
+                'Rn': CORE.FRegisters.set_and_read(int(instr[5:7], 2)),
+                'timer': CycleTimer(1)
+            }
+            instruction['memory'] = {}
+            instruction['writeback'] = {
+                'code': 'FTOV',
+                'Rd': int(instr[7:11], 2),
+                'timer': CycleTimer(1)
+            }
+            # Add dependencies
+            CORE.pipeline.add_dependency(int(instr[7:11], 2))
+
     else:
         print("Invalid type code")
         return (CycleStatus.DONE, None)
@@ -637,6 +697,21 @@ def execute(instruction: dict, CORE):
 
         instruction['result'] = CORE.GALU.mul(val1, val2)
 
+    # EXECUTE: VMUL
+    elif instruction['execute']['code'] == 'VMUL':
+        # value at register 1
+        val1 = instruction['execute']['Rn']
+        # If it is immediate
+        if instruction['execute']['immediate'] == 1:
+            val2 = int(instruction['execute']['operand'], 2)
+        # If it is register direct
+        elif instruction['execute']['immediate'] == 0:
+            val2 = instruction['execute']['operand']
+        else:
+            raise Exception("Wrong addressing mode")
+
+        instruction['result'] = CORE.VALU.vmul(val1, val2)
+
     # CMP
     elif instruction['execute']['code'] == 'CMP':
         # value at register 1
@@ -652,7 +727,6 @@ def execute(instruction: dict, CORE):
 
         instruction['result'] = CORE.GALU.comp(val1, val2)
         
-
     # SHT
     elif instruction['execute']['code'] == 'SHT':
         # value at register 1
@@ -744,6 +818,12 @@ def execute(instruction: dict, CORE):
         CORE.pipeline.remove_dependency(CORE.status)
 
         return (CycleStatus.SQUASH, instruction)
+
+    # FTOV
+    elif instruction['execute']['code'] == 'FTOV':
+        floatv = instruction['execute']['Rn']
+
+        instruction['result'] = vector
 
     else:
         raise Exception("Invalid instruction")
@@ -910,6 +990,12 @@ def write_back(instruction: dict, CORE):
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
+    # VMUL
+    elif instruction['writeback']['code'] == 'VMUL':
+        CORE.VRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        # Remove depencencies
+        CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
+
     # SHT
     elif instruction['writeback']['code'] == 'SHT':
         CORE.GRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
@@ -934,9 +1020,15 @@ def write_back(instruction: dict, CORE):
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
-    # LDR
+    # LDRF
     elif instruction['writeback']['code'] == 'LDRF':
         CORE.FRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        # Remove depencencies
+        CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
+
+    # FTOV
+    elif instruction['writeback']['code'] == 'FTOV':
+        CORE.VRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
