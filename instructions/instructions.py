@@ -711,7 +711,6 @@ def execute(instruction: dict, CORE):
 
     # EXECUTE: VMUL
     elif instruction['execute']['code'] == 'VMUL':
-        print(f'EXECUTING Vector multiply: {instruction}')
 
         # value at register 1
         val1 = instruction['execute']['Rn']
@@ -724,7 +723,8 @@ def execute(instruction: dict, CORE):
         else:
             raise Exception("Wrong addressing mode")
 
-        instruction['result'] = CORE.VALU.vmul(val1, val2)
+        result = CORE.VALU.vmul(val1, val2)
+        instruction['result'] = result
 
     # CMP
     elif instruction['execute']['code'] == 'CMP':
@@ -1018,7 +1018,6 @@ def write_back(instruction: dict, CORE):
 
     # VMUL
     elif instruction['writeback']['code'] == 'VMUL':
-        print(f'WRITEBACK Vector multiply: {instruction}')
         CORE.FRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
