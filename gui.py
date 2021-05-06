@@ -186,13 +186,10 @@ class GUI:
 
         f = '' if (f is None or f[1] is None) else f[1]
         d = '' if (d is None or d[1] is None) else d[1]
-        e = '' if (e is None or e[1] is None) else e[1]['execute']
-        m = '' if (m is None or m[1] is None) else m[1]['execute']
-        w = '' if (w is None or w[1] is None) else w[1]['execute']
+        e = '' if (e is None or e[1] is None) else f'exec:{None if ("code" not in e[1]["execute"]) else e[1]["execute"]["code"]}, mem:{None if ("code" not in e[1]["memory"]) else e[1]["memory"]["code"]}, wrtb:{None if ("code" not in e[1]["writeback"]) else e[1]["writeback"]["code"]}'
+        m = '' if (m is None or m[1] is None) else f'exec:{None if ("code" not in m[1]["execute"]) else m[1]["execute"]["code"]}, mem:{None if ("code" not in m[1]["memory"]) else m[1]["memory"]["code"]}, wrtb:{None if ("code" not in m[1]["writeback"]) else m[1]["writeback"]["code"]}'
+        w = '' if (w is None or w[1] is None) else f'exec:{None if ("code" not in w[1]["execute"]) else w[1]["execute"]["code"]}, mem:{None if ("code" not in w[1]["memory"]) else w[1]["memory"]["code"]}, wrtb:{None if ("code" not in w[1]["writeback"]) else w[1]["writeback"]["code"]}'
 
-        e = '' if ('code' in e) else e['code']
-        m = '' if ('code' in m) else m['code']
-        w = '' if ('code' in w) else w['code']
 
         pip_label['text'] = f'Write Back:\t{w}\nMemory:\t\t{m}\nExecute:\t{e}\nDecode:\t\t{d}\nFetch:\t\t{f}'
         self.pip_tab.update()
