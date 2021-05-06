@@ -405,10 +405,10 @@ def decode(instr: int, CORE):
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[6:10], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
-            if CORE.pipeline.check_dependency(int(instr[10:26], 2)):
+            if CORE.pipeline.check_dependency(int(instr[22:26], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
             else:
-                operand = CORE.GRegisters.set_and_read(int(instr[10:26], 2))
+                operand = CORE.GRegisters.set_and_read(int(instr[22:26], 2))
 
             instruction['execute'] = {}
             instruction['memory'] = {
@@ -496,10 +496,10 @@ def decode(instr: int, CORE):
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[6:10], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
-            if CORE.pipeline.check_dependency(int(instr[10:26], 2)):
+            if CORE.pipeline.check_dependency(int(instr[22:26], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
             else:
-                operand = CORE.GRegisters.set_and_read(int(instr[10:26], 2))
+                operand = CORE.GRegisters.set_and_read(int(instr[22:26], 2))
 
             instruction['execute'] = {}
             instruction['memory'] = {
