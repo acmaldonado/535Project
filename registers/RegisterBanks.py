@@ -108,7 +108,7 @@ class VectorRegisterBank(RegisterBank):
     def read(self) -> int:
         return self.registers[self.read_register].read()
 
-    def set_and_read(self, num: int) -> List:
+    def set_and_read(self, num: int) -> list:
         self.set_read_num(num)
         return self.read()
 
