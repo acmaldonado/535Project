@@ -926,6 +926,7 @@ def load_store(instruction: dict, CORE):
             results = CORE.memory.query(address)
             if results[0] == CycleStatus.DONE:
                 instruction['memory']['vector'][instruction['memory']['index']] = results[1]
+                print(f'Loading: {instruction["memory"]["vector"][instruction["memory"]["index"]]}')
                 instruction['memory']['index'] += 1
                 return (CycleStatus.WAIT, instruction)
             else:
