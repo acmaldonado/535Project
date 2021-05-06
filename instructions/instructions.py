@@ -871,7 +871,7 @@ def load_store(instruction: dict, CORE):
             vector = instruction['memory']['Rn']
         else:
             vector = instruction['memory']['Rn']
-            vector[instruction['memory']['offset']:64] = 0
+            vector[instruction['memory']['offset']:64] = [0] * (64 - instruction['memory']['offset'])
 
         address = instruction['memory']['operand']
 
