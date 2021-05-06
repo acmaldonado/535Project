@@ -869,10 +869,10 @@ def load_store(instruction: dict, CORE):
     # STRV (write vector)
     elif instruction['memory']['code'] == 'STRV':
         if instruction['memory']['offset'] == 0:
-            counter = 63
+            counter = 64
         else:
             counter = instruction['memory']['offset']
-        if instruction['memory']['index'] <= counter:    
+        if instruction['memory']['index'] < counter:    
             val = instruction['memory']['Rn'][instruction['memory']['index']]
             address = instruction['memory']['operand'] + instruction['memory']['index']
             status = CORE.memory.store(address, val)
