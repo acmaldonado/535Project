@@ -340,13 +340,13 @@ def decode(instr: int, CORE):
                 'immediate': int(instr[3], 2),
                 'Rn': CORE.VRegisters.set_and_read(int(instr[7:11], 2)),
                 'operand': operand,
-                'timer': CycleTimer(1)
+                'timer': CycleTimer(3)
             }
             instruction['memory'] = {}
             instruction['writeback'] = {
                 'code': 'VMUL',
                 'Rd': int(instr[11:15], 2),
-                'timer': CycleTimer(1)
+                'timer': CycleTimer(3)
             }
             # Add dependencies
             CORE.pipeline.add_dependency(int(instr[11:15], 2))
@@ -618,14 +618,11 @@ def decode(instr: int, CORE):
             if CORE.pipeline.check_dependency(int(instr[7:11], 2)):
                 return (CycleStatus.WAIT, int(instr, 2))
 
-            instruction['execute'] = {
-                'code': 'FTOV',
-                'Rn': CORE.FRegisters.set_and_read(int(instr[5:7], 2)),
-                'timer': CycleTimer(1)
-            }
+            instruction['execute'] = {}
             instruction['memory'] = {}
             instruction['writeback'] = {
                 'code': 'FTOV',
+                'Rn': CORE.FRegisters.set_and_read(int(instr[5:7], 2)),
                 'Rd': int(instr[7:11], 2),
                 'timer': CycleTimer(1)
             }
@@ -818,12 +815,6 @@ def execute(instruction: dict, CORE):
         CORE.pipeline.remove_dependency(CORE.status)
 
         return (CycleStatus.SQUASH, instruction)
-
-    # FTOV
-    elif instruction['execute']['code'] == 'FTOV':
-        floatv = instruction['execute']['Rn']
-
-        instruction['result'] = vector
 
     else:
         raise Exception("Invalid instruction")
@@ -1028,7 +1019,7 @@ def write_back(instruction: dict, CORE):
 
     # FTOV
     elif instruction['writeback']['code'] == 'FTOV':
-        CORE.VRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
+        CORE.VRegisters.set_and_write(instruction['writeback']['Rd'], instruction['writeback']['Rn'])
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
