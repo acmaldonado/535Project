@@ -918,6 +918,7 @@ def load_store(instruction: dict, CORE):
         return (results[0], instruction)
 
     # LDRV (read vector)
+    print(f'Loading vector instruction: {instruction}')
     elif instruction['memory']['code'] == 'LDRV':
         address = instruction['memory']['operand']
 
