@@ -430,7 +430,7 @@ def decode(instr: int, CORE):
             CORE.pipeline.add_dependency(int(instr[7:9], 2))
 
         # INSTRUCTION: LDRV
-        elif instr[4:7] == '010':
+        elif instr[3:6] == '010':
 
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[6:10], 2)):
@@ -516,7 +516,7 @@ def decode(instr: int, CORE):
             instruction['writeback'] = {}
 
         # INSTRUCTION: STRV
-        elif instr[4:7] == '011':
+        elif instr[3:6] == '011':
 
             # If register is in use
             if CORE.pipeline.check_dependency(int(instr[6:10], 2)):
