@@ -711,7 +711,7 @@ def execute(instruction: dict, CORE):
 
     # EXECUTE: VMUL
     elif instruction['execute']['code'] == 'VMUL':
-        print(f'Running Vector multiply: {instruction}')
+        print(f'EXECUTING Vector multiply: {instruction}')
 
         # value at register 1
         val1 = instruction['execute']['Rn']
@@ -1018,6 +1018,7 @@ def write_back(instruction: dict, CORE):
 
     # VMUL
     elif instruction['writeback']['code'] == 'VMUL':
+        print(f'WRITEBACK Vector multiply: {instruction}')
         CORE.FRegisters.set_and_write(instruction['writeback']['Rd'], instruction['result'])
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
