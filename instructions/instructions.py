@@ -919,11 +919,10 @@ def load_store(instruction: dict, CORE):
 
     # LDRV (read vector)
     elif instruction['memory']['code'] == 'LDRV':
-        print(f'Loading vector instruction: {instruction}')
-        address = instruction['memory']['operand']
+        address = instruction['memory']['operand'] + [instruction["memory"]["index"]
 
         # Read
-        if instruction['memory']['index'] <= instruction['memory']['counter']:
+        if instruction['memory']['index'] < instruction['memory']['counter']:
             results = CORE.memory.query(address)
             if results[0] == CycleStatus.DONE:
                 instruction['memory']['vector'][instruction['memory']['index']] = results[1]
