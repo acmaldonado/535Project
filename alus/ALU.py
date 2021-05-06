@@ -132,4 +132,5 @@ class VectorALU:
         rval = []
         for i in range(fval1):
             rval.append(float_to_bin(fval1[i] * fval2[i]))
-        return rval
+        fval = sum(rval)
+        return fval
