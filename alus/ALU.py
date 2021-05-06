@@ -123,3 +123,13 @@ class VectorALU:
         for i in range(len(fval1)):
             rval.append(float_to_bin(fval1[i] - fval2[i]))
         return rval
+    
+    def vmul(self, val1: list, val2: list) -> list:
+        fval1 = self.convert_binv_to_fltv(val1)
+
+        fval2 = self.convert_binv_to_fltv(val2)
+
+        rval = []
+        for i in range(fval1):
+            rval.append(float_to_bin(fval1[i] * fval2[i]))
+        return rval
