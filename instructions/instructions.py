@@ -331,7 +331,7 @@ def decode(instr: int, CORE):
                 if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                     return (CycleStatus.WAIT, int(instr , 2))
                 else:
-                    operand = CORE.VRegisters.set_and_read(int(instr[28:32], 2))
+                    operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
             else:
                 operand = instr[15:32]
 
@@ -408,7 +408,7 @@ def decode(instr: int, CORE):
             if CORE.pipeline.check_dependency(int(instr[22:26], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
             else:
-                operand = CORE.VRegisters.set_and_read(int(instr[22:26], 2))
+                operand = CORE.GRegisters.set_and_read(int(instr[22:26], 2))
 
             instruction['execute'] = {}
             instruction['memory'] = {
@@ -437,7 +437,7 @@ def decode(instr: int, CORE):
                 if CORE.pipeline.check_dependency(int(instr[23:25], 2)):
                     return (CycleStatus.WAIT, int(instr , 2))
                 else:
-                    operand = CORE.FRegisters.set_and_read(int(instr[23:25], 2))
+                    operand = CORE.GRegisters.set_and_read(int(instr[23:25], 2))
             else:
                 operand = instr[9:25]
 
@@ -499,7 +499,7 @@ def decode(instr: int, CORE):
             if CORE.pipeline.check_dependency(int(instr[22:26], 2)):
                 return (CycleStatus.WAIT, int(instr , 2))
             else:
-                operand = CORE.VRegisters.set_and_read(int(instr[22:26], 2))
+                operand = CORE.GRegisters.set_and_read(int(instr[22:26], 2))
 
             instruction['execute'] = {}
             instruction['memory'] = {
