@@ -13,8 +13,8 @@ class FetchStage:
         #self.squashed = False
 
     def fetch_cycle(self, status, pc, core):
-        print(f'fetching cycle instr: {self.instruction}, enabled: {self.enabled}, fetch_flag: {self.fetch_flag}, ended: {self.ended}, stat: {status}, pc: {pc.read()}')
-        print()
+        #print(f'fetching cycle instr: {self.instruction}, enabled: {self.enabled}, fetch_flag: {self.fetch_flag}, ended: {self.ended}, stat: {status}, pc: {pc.read()}')
+        #print()
 
         if not self.enabled and not self.fetch_flag:
             if self.instruction is not None and self.instruction[1] is not None:
@@ -23,14 +23,14 @@ class FetchStage:
                 return CycleStatus.WAIT, ins[1]
             return CycleStatus.WAIT, None
 
-        print('fs1')
+        #print('fs1')
 
         ended = format(core.status.read(), '032b')
         if ended[31] == '1':
             self.ended = True
             return CycleStatus.WAIT, None
 
-        print('fs2')
+        #print('fs2')
 
         '''if self.instruction is None:
             self.instruction = self.memory.query(pc)
@@ -51,7 +51,7 @@ class FetchStage:
                     #     self.ended = True
             return CycleStatus.WAIT, None 
 
-        print('fs3')
+        #print('fs3')
 
         curr_instruction = self.instruction
         self.instruction = core.memory.query(pc.read())
@@ -61,7 +61,7 @@ class FetchStage:
             #     self.ended = True
 
             if not self.enabled and self.instruction is not None and self.instruction[1] is not None:
-                print(f'flag disabled, {status}')
+                #print(f'flag disabled, {status}')
                 self.fetch_flag = False
 
         '''if self.squashed:
@@ -71,11 +71,11 @@ class FetchStage:
 
     def toggle_enabled(self, val):
         self.enabled = val
-        print(f'fstage enabled: {self.enabled}')
+        #print(f'fstage enabled: {self.enabled}')
         return self.enabled
 
     def raise_fetch_flag(self):
-        print('flag raised')
+        #print('flag raised')
         self.fetch_flag = True
 
     def squash(self):
@@ -100,7 +100,7 @@ class DecodeStage:
             self.fetch.fetch_cycle(CycleStatus.WAIT, pc, core)
             return None
 
-        print(f"passing {self.decoded} to decode with status {status}")
+        #print(f"passing {self.decoded} to decode with status {status}")
 
         if self.decoded[0] != CycleStatus.DONE:
             self.decoded = decode(self.decoded[1], core)
@@ -137,7 +137,7 @@ class ExecuteStage:
             self.decode.decode_cycle(CycleStatus.WAIT, pc, core)
             return None
 
-        print(f"passing {self.executed} to execute")
+        #print(f"passing {self.executed} to execute")
 
         self.executed = execute(self.executed[1], core)
 
@@ -171,7 +171,7 @@ class MemoryStage:
             self.execute.execute_cycle(CycleStatus.WAIT, pc, core, pipe)
             return None
         
-        print(f"passing {self.memorized} to memory")
+        #print(f"passing {self.memorized} to memory")
 
         self.memorized = load_store(self.memorized[1], core)
 
@@ -192,29 +192,29 @@ class WritebackStage:
         self.enabled = True
 
     def writeback_cycle(self, pc, core, pipe):
-        print(f"passing {self.written} to writeback")
+        #print(f"passing {self.written} to writeback")
 
         if self.written is not None:
             self.written = write_back(self.written[1], core)
-            print('cond1')
+            #print('cond1')
 
-        print(f'SELF WRITTEN: {self.written}')
+        #print(f'SELF WRITTEN: {self.written}')
 
         if self.written is not None and self.written[0] == CycleStatus.WAIT:
             self.memory.memory_cycle(CycleStatus.WAIT, pc, core, pipe)
-            print('cond2')
+            #print('cond2')
 
         else:
             if not self.enabled and self.written is not None and self.written[1] is not None:
                 self.fetch.raise_fetch_flag()
             written_to_return = self.written
             self.written = self.memory.memory_cycle(CycleStatus.DONE, pc, core, pipe)
-            print('cond3')
+            #print('cond3')
             return written_to_return
 
     def toggle_enabled(self, val):
         self.enabled = val
-        print(f'wstage enabled: {self.enabled}')
+        #print(f'wstage enabled: {self.enabled}')
         return self.enabled
 
 class Pipeline:
@@ -239,7 +239,7 @@ class Pipeline:
         self.dstage.squash()
         self.core.memory.squash()
         self.fstage.raise_fetch_flag()
-        print('SQUASH WAS CALLED')
+        # print('SQUASH WAS CALLED')
         #self.estage.squash()
 
     def add_dependency(self, register):

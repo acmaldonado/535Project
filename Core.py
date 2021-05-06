@@ -149,11 +149,12 @@ class Core:
         #     self.run_until_done()
         #     return_string += f'Done after {self.cycles} cycles!\n'
 
-        if cmd == 'toggle_cache':
+        '''if cmd == 'toggle_cache':
             return_string += f'Cache now set to {self.memory.toggle_cache()}'
 
         if cmd == 'toggle_pipeline':
-            return_string += f'Pipeline now set to {self.pipeline.toggle()}'
+            return_string += f'Pipeline now set to {self.pipeline.toggle_enabled(not self.pipeline.enabled)}'
+        '''
 
         if cmd == 'quit':
             exit(0)
