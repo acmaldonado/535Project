@@ -414,7 +414,9 @@ def decode(instr: int, CORE):
             instruction['memory'] = {
                 'code': 'LDRV',
                 'operand': operand,
-                'offset': int(instr[26:32], 2),
+                'vector': [0] * 64,
+                'index': 0,
+                'counter': int(instr[26:32], 2),
                 'timer': CycleTimer(1)
             }
             instruction['writeback'] = {
@@ -626,7 +628,7 @@ def decode(instr: int, CORE):
                 else:
                     offset = CORE.GRegisters.set_and_read(int(instr[24:28], 2))
             else:
-                offset = instr[20:28]
+                offset = int(instr[20:28], 2)
 
             instruction['execute'] = {}
             instruction['memory'] = {}
@@ -865,11 +867,16 @@ def load_store(instruction: dict, CORE):
 
     # STRV (write vector)
     elif instruction['memory']['code'] == 'STRV':
-        val = instruction['memory']['Rn']
+        if instruction['memory']['offset'] == 0:    
+            vector = instruction['memory']['Rn']
+        else:
+            vector = instruction['memory']['Rn']
+            vector[instruction['memory']['offset']:64] = 0
+
         address = instruction['memory']['operand']
 
         # Write
-        status = CORE.memory.store(address, val)
+        status = CORE.memory.store(address, vector)
         return (status, instruction)
 
     # STRF (write float)
@@ -909,8 +916,14 @@ def load_store(instruction: dict, CORE):
         address = instruction['memory']['operand']
 
         # Read
-        results = CORE.memory.query(address)
-        instruction['result'] = results[1]
+        if instruction['memory']['index'] <= instruction['memory']['counter']:
+            value = CORE.memory.query(address)
+            if results[0] == CycleStatus.DONE:
+                instruction['memory']['vector'][instruction['memory']['index']] = value
+                instruction['memory']['index'] += 1
+                return (CycleStatus.WAIT, instruction)
+        else:
+            instruction['result'] =  instruction['memory']['vector']
         return (results[0], instruction)
 
     # LDRF (read float)
@@ -1031,7 +1044,12 @@ def write_back(instruction: dict, CORE):
 
     # FTOV
     elif instruction['writeback']['code'] == 'FTOV':
-        CORE.VRegisters.set_and_write(instruction['writeback']['Rd'], instruction['writeback']['Rn'])
+        # Read vector register 
+        vector = CORE.VRegisters.set_and_read(instruction['writeback']['Rd'])
+        # Modify float at offset
+        vector[instruction['writeback']['offset']] = instruction['writeback']['Rn']
+        # Write into vector register
+        CORE.VRegisters.set_and_write(instruction['writeback']['Rd'], vector)
         # Remove depencencies
         CORE.pipeline.remove_dependency(instruction['writeback']['Rd'])
 
