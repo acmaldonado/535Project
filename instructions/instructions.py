@@ -507,7 +507,7 @@ def decode(instr: int, CORE):
                 'Rn': CORE.VRegisters.set_and_read(int(instr[6:10], 2)),
                 'operand': operand,
                 'index': 0,
-                'offset': int(instr[26:32], 2),
+                'offset': int(instr[27:32], 2),
                 'timer': CycleTimer(1)
             }
             instruction['writeback'] = {}
