@@ -922,9 +922,11 @@ def load_store(instruction: dict, CORE):
                 instruction['memory']['vector'][instruction['memory']['index']] = results[1]
                 instruction['memory']['index'] += 1
                 return (CycleStatus.WAIT, instruction)
+            else:
+                return (CycleStatus.WAIT, instruction)
         else:
             instruction['result'] =  instruction['memory']['vector']
-        return (results[0], instruction)
+            return (CycleStatus.DONE, instruction)
 
     # LDRF (read float)
     elif instruction['memory']['code'] == 'LDRF':
