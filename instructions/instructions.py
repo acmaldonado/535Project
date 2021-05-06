@@ -331,7 +331,7 @@ def decode(instr: int, CORE):
                 if CORE.pipeline.check_dependency(int(instr[28:32], 2)):
                     return (CycleStatus.WAIT, int(instr , 2))
                 else:
-                    operand = CORE.GRegisters.set_and_read(int(instr[28:32], 2))
+                    operand = CORE.VRegisters.set_and_read(int(instr[28:32], 2))
             else:
                 operand = instr[15:32]
 
