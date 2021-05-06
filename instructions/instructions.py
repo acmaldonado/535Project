@@ -878,7 +878,7 @@ def load_store(instruction: dict, CORE):
             status = CORE.memory.store(address, val)
             if status == CycleStatus.DONE:
                 instruction['memory']['index'] += 1
-                return (CycleStatus.DONE, instruction)
+                return (CycleStatus.WAIT, instruction)
             else:
                 return (CycleStatus.WAIT, instruction)
 
