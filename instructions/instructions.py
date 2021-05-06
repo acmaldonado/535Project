@@ -711,7 +711,6 @@ def execute(instruction: dict, CORE):
 
     # EXECUTE: VMUL
     elif instruction['execute']['code'] == 'VMUL':
-        print(f'VECTOR MULTIPLY RAN {instruction}')
 
         # value at register 1
         val1 = instruction['execute']['Rn']
@@ -872,7 +871,6 @@ def load_store(instruction: dict, CORE):
 
     # STRV (write vector)
     elif instruction['memory']['code'] == 'STRV':
-        print(f'VECTOR STORE RAN {instruction}')
         if instruction['memory']['offset'] == 0:
             counter = 64
         else:
@@ -924,7 +922,6 @@ def load_store(instruction: dict, CORE):
 
     # LDRV (read vector)
     elif instruction['memory']['code'] == 'LDRV':
-        print(f'VECTOR LOAD RAN {instruction}')
         address = instruction['memory']['operand'] + instruction["memory"]["index"]
 
         # Read
