@@ -122,7 +122,7 @@ def interpret_asm_line(line, tags):
         else:
             raise Exception(f"Invalid value \'{tokens[2]}\'")
 
-        command = instr_type + immediate + instr_opcode + destination + value + '00000'
+        command = instr_type + instr_opcode + immediate + destination + value + '00000'
         return command
         
     elif tokens[0] == 'str':
@@ -154,7 +154,7 @@ def interpret_asm_line(line, tags):
         else:
             raise Exception(f"Invalid value \'{tokens[2]}\'")
 
-        command = instr_type + immediate + instr_opcode + destination + value + '00000'
+        command = instr_type  + instr_opcode + immediate + destination + value + '00000'
         return command
         
     elif tokens[0] == 'add':
