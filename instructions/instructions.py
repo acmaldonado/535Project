@@ -506,6 +506,7 @@ def decode(instr: int, CORE):
                 'code': 'STRV',
                 'Rn': CORE.VRegisters.set_and_read(int(instr[6:10], 2)),
                 'operand': operand,
+                'index': 0,
                 'offset': int(instr[26:32], 2),
                 'timer': CycleTimer(1)
             }
@@ -867,17 +868,22 @@ def load_store(instruction: dict, CORE):
 
     # STRV (write vector)
     elif instruction['memory']['code'] == 'STRV':
-        if instruction['memory']['offset'] == 0:    
-            vector = instruction['memory']['Rn']
+        if instruction['memory']['offset'] == 0:
+            counter = 63
         else:
-            vector = instruction['memory']['Rn']
-            vector[instruction['memory']['offset']:64] = [0] * (64 - instruction['memory']['offset'])
+            counter = instruction['memory']['offset']
+        if instruction['memory']['index'] <= counter:    
+            val = instruction['memory']['Rn'][instruction['memory']['index']]
+            address = instruction['memory']['operand'] + instruction['memory']['index']
+            status = CORE.memory.store(address, val)
+            if status == CycleStatus.DONE:
+                instruction['memory']['index'] += 1
+                return (CycleStatus.DONE, instruction)
+            else:
+                return (CycleStatus.WAIT, instruction)
 
-        address = instruction['memory']['operand']
-
-        # Write
-        status = CORE.memory.store(address, vector)
-        return (status, instruction)
+        else:
+            return (CycleStatus.DONE, instruction)
 
     # STRF (write float)
     if instruction['memory']['code'] == 'STRF':
