@@ -31,7 +31,7 @@ class CycleTimer():
                 return CycleStatus.DONE
             self.curr_wait_time = self.wait_time
             self.curr_working_address = address
-            print(f'----------------current working address on {self} now {self.curr_working_address}-----------------------')
+            # print(f'----------------current working address on {self} now {self.curr_working_address}-----------------------')
             return CycleStatus.WAIT
         elif self.curr_working_address == address:
             # print('address is the same as working')
@@ -42,13 +42,13 @@ class CycleTimer():
                 self.curr_wait_time -= 1
                 # print(f'decreasing time to {self.curr_wait_time}')
                 return CycleStatus.WAIT
-        print(f'Checking on wrong address in {self} dummy! held address {self.curr_working_address} and time {self.curr_wait_time} with your {address}')
+        # print(f'Checking on wrong address in {self} dummy! held address {self.curr_working_address} and time {self.curr_wait_time} with your {address}')
         return CycleStatus.WAIT
     
     def reset(self):
         self.curr_wait_time = self.wait_time
         self.curr_working_address = None
-        print(f'-------------resetting timer {self} to {self.wait_time} with address {self.curr_working_address}-----------------')
+        # print(f'-------------resetting timer {self} to {self.wait_time} with address {self.curr_working_address}-----------------')
 
 
 class CacheLine():
@@ -167,7 +167,7 @@ class RAMBlock():
             return CycleStatus.WAIT
 
     def squash(self):
-        print('RAM timer reset!')
+        # print('RAM timer reset!')
         self.timer.reset()
 
     def __str__(self):
@@ -202,18 +202,18 @@ class Memory():
         if self.cache_enabled:
             status, value = self.caches[0].query(address)
             if status == CycleStatus.WAIT:
-                print(f'memory query returning {status, value}')
+                # print(f'memory query returning {status, value}')
                 return status, value
             else:
-                print(f'memory query returning {status, value.data[address%LINE_SIZE]}')
+                # print(f'memory query returning {status, value.data[address%LINE_SIZE]}')
                 return status, value.data[address%LINE_SIZE]
         else:
             status, value = self.main_memory.query(address)
             if status == CycleStatus.WAIT:
-                print(f'memory query returning {status, value}')
+                # print(f'memory query returning {status, value}')
                 return status, value
             else:
-                print(f'memory query returning {status, value.data[address%LINE_SIZE]}')
+                # print(f'memory query returning {status, value.data[address%LINE_SIZE]}')
                 return status, value.data[address%LINE_SIZE]
 
     def store(self, address, data):
@@ -222,8 +222,9 @@ class Memory():
         else:
             return self.main_memory.store(address, data)
 
-    def toggle_cache(self):
-        self.cache_enabled = not self.cache_enabled
+    def toggle_cache(self, val):
+        self.cache_enabled = val
+        print(f'Cache enabled: {self.cache_enabled}')
         return self.cache_enabled
 
     def squash(self):
@@ -335,8 +336,8 @@ def main():
         if cmd == 'quit':
             exit(0)
         
-        if cmd == 'toggle_cache':
-            print(f'Cache now set to {memory_system.toggle_cache()}')
+        # if cmd == 'toggle_cache':
+        #     print(f'Cache now set to {memory_system.toggle_cache()}')
         '''
         COMMAND create_empty_memory(address_size, caches)
 
