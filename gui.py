@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
+import time
+
 class GUI:
     def __init__(self, core):
         self.core = core
@@ -61,11 +63,11 @@ class GUI:
         self.next_btn.place(rely=.90, relx=.66, relheight=.05, relwidth=.33)
 
         self.cache_int = tk.IntVar(value=1)
-        self.cache_check = tk.Checkbutton(self.mem_tab, text='Cache', variable=self.cache_int, command=lambda: None)
+        self.cache_check = tk.Checkbutton(self.mem_tab, text='Cache', variable=self.cache_int, command=lambda: self.core.memory.toggle_cache(True if self.cache_int.get() == 1 else False))
         self.cache_check.place(rely=.95, relx=0, relheight=.05, relwidth=.5)
 
         self.pipel_int = tk.IntVar(value=1)
-        self.pipel_check = tk.Checkbutton(self.mem_tab, text='Pipeline', variable=self.pipel_int, command=lambda: None)
+        self.pipel_check = tk.Checkbutton(self.mem_tab, text='Pipeline', variable=self.pipel_int, command=lambda: self.core.pipeline.toggle_enabled(True if self.pipel_int.get() == 1 else False))
         self.pipel_check.place(rely=.95, relx=.5, relheight=.05, relwidth=.5)
 
         # REGISTERS TAB
@@ -93,7 +95,7 @@ class GUI:
         self.cycles_label = tk.Label(self.dia_tab, font=self.FONT)
         self.cycles_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
 
-        self.update_cycle_count(self.cycles_label)
+        # self.update_cycle_count(self.cycles_label)
 
         self.cycles_prompt_label = tk.Label(self.dia_tab, text='How many cycles to run:', font=self.FONT)
         self.cycles_prompt_label.place(rely=.05, relx=0, relheight=.05, relwidth=1)
@@ -102,11 +104,37 @@ class GUI:
         self.cycles_field.place(rely=.1, relx=0, relwidth=1, relheight=.05)
         self.cycles_field.bind('<Return>', lambda event: self.run_cycles(self.cycles_label, self.cycles_field))
 
+        self.run_comp = tk.Button(self.dia_tab, text='Run to completion', font=self.FONT, command=lambda: self.run_until_done(self.cycles_label))
+        self.run_comp.place(rely=.85, relx=.33, relheight=.05, relwidth=.33)
+
+        self.root.after(500, self.update_cycle_count, self.cycles_label)
+
+        # PIPELINE TAB
+        self.pip_tab = tk.Frame(self.tabs)
+
+        self.cycles_label = tk.Label(self.pip_tab, font=self.FONT)
+        self.cycles_label.place(rely=0, relx=0, relheight=1, relwidth=1)
+        # self.cycles_label
+        # self.dia_tab.place(relx=.025, rely=.025, relwidth=.95, relheight=.95)
+
+        # self.cycles_label = tk.Label(self.dia_tab, font=self.FONT)
+        # self.cycles_label.place(rely=0, relx=0, relheight=.05, relwidth=1)
+
+        # self.update_cycle_count(self.cycles_label)
+
+        # self.cycles_prompt_label = tk.Label(self.dia_tab, text='How many cycles to run:', font=self.FONT)
+        # self.cycles_prompt_label.place(rely=.05, relx=0, relheight=.05, relwidth=1)
+
+        # self.cycles_field = tk.Entry(self.dia_tab, font=self.FONT)
+        # self.cycles_field.place(rely=.1, relx=0, relwidth=1, relheight=.05)
+        # self.cycles_field.bind('<Return>', lambda event: self.run_cycles(self.cycles_label, self.cycles_field))
+
         # TAB CONTROL
         self.tabs.add(self.cmd_tab, text='Command Line')
         self.tabs.add(self.mem_tab, text='Memory')
         self.tabs.add(self.reg_tab, text='Registers')
         self.tabs.add(self.dia_tab, text='Diagnostic')
+        self.tabs.add(self.pip_tab, text='Pipeline')
         self.tabs.pack(expand=1, fill='both')
 
     def start(self):
@@ -145,12 +173,16 @@ class GUI:
 
     def update_cycle_count(self, cycles_label):
         cycles_label['text'] = f'Cycle count: {self.core.cycles}'
+        self.root.after(500, self.update_cycle_count, self.cycles_label)
 
     def run_cycles(self, cycles_label, cycles_field):
         self.core.run_cycles(int(cycles_field.get()))
-        self.update_cycle_count(cycles_label)
+        # self.update_cycle_count(cycles_label)
 
-# if __name__ == '__main__':
-#     main_core = Core(12, 4, 12, 16, {"layers":2,"sizes":[16,64]})
-#     gui = GUI(main_core)
-#     gui.start()
+    def run_until_done(self, cycles_label):
+        while format(self.core.status.read(), '032b')[31] != '1':
+            self.core.pipeline.run_cycle(self.core.pc, self.core)
+            self.core.cycles += 1
+            # self.update_cycle_count(cycles_label)
+            self.dia_tab.update()
+            # time.sleep(1)

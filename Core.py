@@ -37,11 +37,6 @@ class Core:
         for i in range(num_cycles):
             self.pipeline.run_cycle(self.pc, self)
             self.cycles += 1
-    
-    def run_until_done(self):
-        while format(self.status.read(), '032b')[31] != '1':
-            self.pipeline.run_cycle(self.pc, self)
-            self.cycles += 1
 
     def memory_array(self):
         return [*enumerate([str(x) for x in self.memory.caches]), ('RAM', str(self.memory.main_memory))]
@@ -149,16 +144,16 @@ class Core:
                         return_string +=  str(curr_level.memory_array[line_idx]) + '\n'
 
 
-        if cmd == 'run_to_done':
-            return_string += 'Running current program to completion\n'
-            self.run_until_done()
-            return_string += f'Done after {self.cycles} cycles!\n'
+        # if cmd == 'run_to_done':
+        #     return_string += 'Running current program to completion\n'
+        #     self.run_until_done()
+        #     return_string += f'Done after {self.cycles} cycles!\n'
 
         if cmd == 'toggle_cache':
             return_string += f'Cache now set to {self.memory.toggle_cache()}'
 
         if cmd == 'toggle_pipeline':
-            return_string += f'Pipeline now set to {self.pipeline.toggle_pipeline()}'
+            return_string += f'Pipeline now set to {self.pipeline.toggle()}'
 
         if cmd == 'quit':
             exit(0)
