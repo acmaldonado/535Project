@@ -130,7 +130,7 @@ class VectorALU:
         fval2 = self.convert_binv_to_fltv(val2)
 
         rval = []
-        for i in range(fval1):
-            rval.append(float_to_bin(fval1[i] * fval2[i]))
+        for i in range(len(fval1)):
+            rval.append(fval1[i] * fval2[i])
         fval = sum(rval)
         return float_to_bin(fval)
