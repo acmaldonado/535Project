@@ -1,7 +1,7 @@
 //R0 has array start address
 MOV R0 #30
 //R1 has array length
-MOV R1 #4
+MOV R1 #50
 
 MOV R2 #1
 MOV R3 R0

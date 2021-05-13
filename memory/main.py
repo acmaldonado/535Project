@@ -144,7 +144,7 @@ class RAMBlock():
     def __init__(self, address_size):
         self.memory_array = [CacheLine() for i in range(2**(address_size-OFFSET_SIZE))]
         self.address_size = address_size
-        self.timer = CycleTimer(3)
+        self.timer = CycleTimer(100)
 
     def query(self, address):
         if self.timer.check_on(address) == CycleStatus.DONE:

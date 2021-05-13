@@ -154,7 +154,7 @@ class ExecuteStage:
 
     def squash(self):
         if self.executed is not None:
-            self.executed = None
+            self.executed = CycleStatus.DONE, None
 
 class MemoryStage:
 
@@ -238,6 +238,7 @@ class Pipeline:
         self.fstage.squash()
         self.dstage.squash()
         self.core.memory.squash()
+        self.estage.squash()
         self.fstage.raise_fetch_flag()
         # print('SQUASH WAS CALLED')
         #self.estage.squash()
