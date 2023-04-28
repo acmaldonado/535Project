@@ -10370,11 +10370,7 @@ in place of memory addresses or register numbers of a branch or jump instruction
 
 interpreter also supports comments indicated by starting with ‘//’, and these lines will be
 
-Ignored. Finally, the assembler supports use of acronyms for the status bits in comparison instructions. Refer to the 
-
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: undefined internal link (link text: "status register list"). Did you generate a TOC with blue links? </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-[status register list](#heading=h.n6wqadh635v8) for the acronyms.
+Ignored. Finally, the assembler supports use of acronyms for the status bits in comparison instructions. Refer to the [status register list] for the acronyms.
 
 **Running Programs:** Once you have written a program and generated a memory file, you can start the User Interface by using the command line to run a script named ‘core.py’ in the root directory. The command format for running this script via the command line is as follows:
 
@@ -10586,31 +10582,6 @@ Conversion notes:
 * Fri Apr 28 2023 15:27:00 GMT-0700 (PDT)
 * Source doc: Project Report
 * Tables are currently converted to HTML tables.
-
-ERROR:
-undefined internal link to this URL: "#heading=h.n6wqadh635v8".link text: status register list
-?Did you generate a TOC with blue links?
-
-* This document has images: check for >>>>>  gd2md-html alert:  inline image link in generated source and store images to your server. NOTE: Images in exported zip file from Google Docs may not appear in  the same order as they do in your doc. Please check the images!
-
-
-WARNING:
-You have 7 H1 headings. You may want to use the "H1 -> H2" option to demote all headings by one level.
-
------>
-
-
-<p style="color: red; font-weight: bold">>>>>>  gd2md-html alert:  ERRORs: 1; WARNINGs: 1; ALERTS: 6.</p>
-<ul style="color: red; font-weight: bold"><li>See top comment block for details on ERRORs and WARNINGs. <li>In the converted Markdown or HTML, search for inline alerts that start with >>>>>  gd2md-html alert:  for specific instances that need correction.</ul>
-
-<p style="color: red; font-weight: bold">Links to alert messages:</p><a href="#gdcalert1">alert1</a>
-<a href="#gdcalert2">alert2</a>
-<a href="#gdcalert3">alert3</a>
-<a href="#gdcalert4">alert4</a>
-<a href="#gdcalert5">alert5</a>
-<a href="#gdcalert6">alert6</a>
-
-<p style="color: red; font-weight: bold">>>>>> PLEASE check and correct alert issues and delete this message and the inline alerts.<hr></p>
 
 
 
@@ -20984,11 +20955,7 @@ in place of memory addresses or register numbers of a branch or jump instruction
 
 interpreter also supports comments indicated by starting with ‘//’, and these lines will be
 
-Ignored. Finally, the assembler supports use of acronyms for the status bits in comparison instructions. Refer to the 
-
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: undefined internal link (link text: "status register list"). Did you generate a TOC with blue links? </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-[status register list](#heading=h.n6wqadh635v8) for the acronyms.
+Ignored. Finally, the assembler supports use of acronyms for the status bits in comparison instructions. Refer to the [status register list] for the acronyms.
 
 **Running Programs:** Once you have written a program and generated a memory file, you can start the User Interface by using the command line to run a script named ‘core.py’ in the root directory. The command format for running this script via the command line is as follows:
 
