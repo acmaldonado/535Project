@@ -10385,51 +10385,16 @@ Ignored. Finally, the assembler supports use of acronyms for the status bits in 
 This will launch a window that can be used for viewing or altering the state of the simulated machine at any given time, as well as for simulating cycles or running the loaded program to completion. The window is divided into five tabs: **Command Line, Memory, Registers, Diagnostic, and Pipeline**. The first tab you will see is the **Command Line** tab as shown below:
 
 
-
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image1.png "image_tooltip")
-
-
 The command field is used for debug commands to manually send read or write requests to RAM, with the output from the command being displayed in the Output section. This tab was mainly used for GUI debugging, and is usually unimportant for running an application. The next tab is the **Memory** tab as shown below:
-
-
-
-<p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image2.png "image_tooltip")
 
 
 This tab shows the contents of the different levels of cache and the RAM. The label at the top indicates which level of memory is currently being viewed with it being an integer for cache level or RAM if main memory is being viewed instead. The level of cache being viewed can be changed by pressing the ‘Go up’ and ‘Go down’ buttons to navigate. The main window shows each line of cache or memory, with each word in hexadecimal format being separated by a space, as well as information such as the tag of the line being stored and the state of the valid bit. Even though tag and valid are present in RAM, they are not actually used. The text bar labeled ‘Go to address’ can be used to move the window to a specific memory location by inputting it into the text box and pressing ENTER. Finally, the checkboxes at the bottom labelled ‘Cache’ and ‘Pipeline’ are used to toggle whether or not the cache and the pipeline are used respectively. They both start as enabled by default. The next tab is the **Registers** tab as shown below:
 
 
-
-<p id="gdcalert4" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image3.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert5">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image3.png "image_tooltip")
-
-
 This tab displays the contents of the various registers. The name of the register currently being viewed is the label at the top of the window, with registers being labelled as either a special register(PC, Status, LR, RET), or the type of register (General, Float, Vector) followed by the number of that particular register. The value or values contained in the register are shown in the box in the middle. The registers can be navigated using the ‘Previous’ and ‘Next’ buttons. The next tab is the **Diagnostic** tab as shown below:
 
 
-
-<p id="gdcalert5" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image4.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert6">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image4.png "image_tooltip")
-
-
 This tab is used to view the number of cycles run since the start of the machine and is used to continue the simulation. To run a specific number of cycles, type the number of cycles into the text box under the label ‘How many cycles to run’ and press ENTER. In order to have the simulation run to completion, press the button labeled ‘Run to completion’. The last tab is the **Pipeline** tab as shown below:
-
-
-
-<p id="gdcalert6" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image5.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert7">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image5.png "image_tooltip")
 
 
 This tab is used to view the current state of the pipeline during execution. Each label represents a stage in the pipeline, and next to it is listed the instruction currently being held at that stage. This representation includes the control signals passed to each stage for each instruction.
@@ -20970,51 +20935,16 @@ Ignored. Finally, the assembler supports use of acronyms for the status bits in 
 This will launch a window that can be used for viewing or altering the state of the simulated machine at any given time, as well as for simulating cycles or running the loaded program to completion. The window is divided into five tabs: **Command Line, Memory, Registers, Diagnostic, and Pipeline**. The first tab you will see is the **Command Line** tab as shown below:
 
 
-
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image1.png "image_tooltip")
-
-
 The command field is used for debug commands to manually send read or write requests to RAM, with the output from the command being displayed in the Output section. This tab was mainly used for GUI debugging, and is usually unimportant for running an application. The next tab is the **Memory** tab as shown below:
-
-
-
-<p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image2.png "image_tooltip")
 
 
 This tab shows the contents of the different levels of cache and the RAM. The label at the top indicates which level of memory is currently being viewed with it being an integer for cache level or RAM if main memory is being viewed instead. The level of cache being viewed can be changed by pressing the ‘Go up’ and ‘Go down’ buttons to navigate. The main window shows each line of cache or memory, with each word in hexadecimal format being separated by a space, as well as information such as the tag of the line being stored and the state of the valid bit. Even though tag and valid are present in RAM, they are not actually used. The text bar labeled ‘Go to address’ can be used to move the window to a specific memory location by inputting it into the text box and pressing ENTER. Finally, the checkboxes at the bottom labelled ‘Cache’ and ‘Pipeline’ are used to toggle whether or not the cache and the pipeline are used respectively. They both start as enabled by default. The next tab is the **Registers** tab as shown below:
 
 
-
-<p id="gdcalert4" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image3.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert5">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image3.png "image_tooltip")
-
-
 This tab displays the contents of the various registers. The name of the register currently being viewed is the label at the top of the window, with registers being labelled as either a special register(PC, Status, LR, RET), or the type of register (General, Float, Vector) followed by the number of that particular register. The value or values contained in the register are shown in the box in the middle. The registers can be navigated using the ‘Previous’ and ‘Next’ buttons. The next tab is the **Diagnostic** tab as shown below:
 
 
-
-<p id="gdcalert5" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image4.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert6">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image4.png "image_tooltip")
-
-
 This tab is used to view the number of cycles run since the start of the machine and is used to continue the simulation. To run a specific number of cycles, type the number of cycles into the text box under the label ‘How many cycles to run’ and press ENTER. In order to have the simulation run to completion, press the button labeled ‘Run to completion’. The last tab is the **Pipeline** tab as shown below:
-
-
-
-<p id="gdcalert6" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image5.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert7">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image5.png "image_tooltip")
 
 
 This tab is used to view the current state of the pipeline during execution. Each label represents a stage in the pipeline, and next to it is listed the instruction currently being held at that stage. This representation includes the control signals passed to each stage for each instruction.
